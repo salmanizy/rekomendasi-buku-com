@@ -737,7 +737,7 @@ export default function AdminPanel() {
                     <Alert className="border-blue-500 bg-blue-50">
                       <Link2 className="h-4 w-4 text-blue-600" />
                       <AlertDescription className="text-blue-900">
-                        <strong>Preview:</strong> {recommendationForm.personName} merekomendasikan "{recommendationForm.bookTitle}"
+                        <strong>Preview:</strong> {recommendationForm.personName} merekomendasikan &quot;{recommendationForm.bookTitle}&quot;
                       </AlertDescription>
                     </Alert>
                   )}
