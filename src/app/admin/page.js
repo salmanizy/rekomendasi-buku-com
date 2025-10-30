@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Book, User, LogOut, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { Book, User, LogOut, AlertCircle, CheckCircle2, Loader2, Link2, Search, X } from 'lucide-react';
 
 export default function AdminPanel() {
   const router = useRouter();
@@ -44,6 +44,25 @@ export default function AdminPanel() {
   const [personSuccess, setPersonSuccess] = useState('');
   const [personLoading, setPersonLoading] = useState(false);
 
+  // Recommendation form state
+  const [recommendationForm, setRecommendationForm] = useState({
+    personId: '',
+    bookId: '',
+    personName: '',
+    bookTitle: ''
+  });
+  const [recommendationError, setRecommendationError] = useState('');
+  const [recommendationSuccess, setRecommendationSuccess] = useState('');
+  const [recommendationLoading, setRecommendationLoading] = useState(false);
+
+  // Search states
+  const [personSearch, setPersonSearch] = useState('');
+  const [bookSearch, setBookSearch] = useState('');
+  const [showPersonDropdown, setShowPersonDropdown] = useState(false);
+  const [showBookDropdown, setShowBookDropdown] = useState(false);
+  const personRef = useRef(null);
+  const bookRef = useRef(null);
+
   // Check authentication
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -61,6 +80,21 @@ export default function AdminPanel() {
     setUser(parsedUser);
     setLoading(false);
     fetchData();
+  }, []);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (personRef.current && !personRef.current.contains(event.target)) {
+        setShowPersonDropdown(false);
+      }
+      if (bookRef.current && !bookRef.current.contains(event.target)) {
+        setShowBookDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const fetchData = async () => {
@@ -88,7 +122,6 @@ export default function AdminPanel() {
     setBookError('');
     setBookSuccess('');
 
-    // Validasi
     if (!bookForm.title || !bookForm.author) {
       setBookError('Judul dan penulis harus diisi!');
       return;
@@ -134,7 +167,6 @@ export default function AdminPanel() {
     setPersonError('');
     setPersonSuccess('');
 
-    // Validasi
     if (!personForm.name) {
       setPersonError('Nama harus diisi!');
       return;
@@ -169,6 +201,106 @@ export default function AdminPanel() {
     } finally {
       setPersonLoading(false);
     }
+  };
+
+  const handleRecommendationSubmit = async (e) => {
+    e.preventDefault();
+    setRecommendationError('');
+    setRecommendationSuccess('');
+
+    if (!recommendationForm.personId || !recommendationForm.bookId) {
+      setRecommendationError('Person dan Buku harus dipilih!');
+      return;
+    }
+
+    setRecommendationLoading(true);
+
+    try {
+      const response = await fetch('/api/admin/recommendations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          person_id: recommendationForm.personId,
+          book_id: recommendationForm.bookId
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setRecommendationSuccess('Rekomendasi berhasil ditambahkan!');
+        setRecommendationForm({
+          personId: '',
+          bookId: '',
+          personName: '',
+          bookTitle: ''
+        });
+        setPersonSearch('');
+        setBookSearch('');
+        fetchData();
+        setTimeout(() => setRecommendationSuccess(''), 3000);
+      } else {
+        setRecommendationError(data.error || 'Gagal menambahkan rekomendasi!');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setRecommendationError('Terjadi kesalahan. Silakan coba lagi.');
+    } finally {
+      setRecommendationLoading(false);
+    }
+  };
+
+  // Filter people based on search
+  const filteredPeople = people.filter(person =>
+    person.name.toLowerCase().includes(personSearch.toLowerCase())
+  );
+
+  // Filter books based on search
+  const filteredBooks = books.filter(book =>
+    book.title.toLowerCase().includes(bookSearch.toLowerCase()) ||
+    book.author.toLowerCase().includes(bookSearch.toLowerCase())
+  );
+
+  // Handle person selection
+  const handlePersonSelect = (person) => {
+    setRecommendationForm({
+      ...recommendationForm,
+      personId: person.uuid || person.id,
+      personName: person.name
+    });
+    setPersonSearch(person.name);
+    setShowPersonDropdown(false);
+  };
+
+  // Handle book selection
+  const handleBookSelect = (book) => {
+    setRecommendationForm({
+      ...recommendationForm,
+      bookId: book.uuid || book.id,
+      bookTitle: book.title
+    });
+    setBookSearch(`${book.title} - ${book.author}`);
+    setShowBookDropdown(false);
+  };
+
+  // Clear person selection
+  const clearPersonSelection = () => {
+    setRecommendationForm({
+      ...recommendationForm,
+      personId: '',
+      personName: ''
+    });
+    setPersonSearch('');
+  };
+
+  // Clear book selection
+  const clearBookSelection = () => {
+    setRecommendationForm({
+      ...recommendationForm,
+      bookId: '',
+      bookTitle: ''
+    });
+    setBookSearch('');
   };
 
   if (loading) {
@@ -241,9 +373,10 @@ export default function AdminPanel() {
 
         {/* Forms */}
         <Tabs defaultValue="books" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsList className="grid w-full grid-cols-3 max-w-2xl">
             <TabsTrigger value="books">Tambah Buku</TabsTrigger>
             <TabsTrigger value="people">Tambah Orang</TabsTrigger>
+            <TabsTrigger value="recommendations">Tambah Rekomendasi</TabsTrigger>
           </TabsList>
 
           {/* Add Book Form */}
@@ -444,6 +577,182 @@ export default function AdminPanel() {
                       </>
                     ) : (
                       'Tambah Orang'
+                    )}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Add Recommendation Form */}
+          <TabsContent value="recommendations">
+            <Card>
+              <CardHeader>
+                <CardTitle>Tambah Rekomendasi Baru</CardTitle>
+                <CardDescription>
+                  Hubungkan orang dengan buku yang mereka rekomendasikan
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleRecommendationSubmit} className="space-y-4">
+                  {recommendationError && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{recommendationError}</AlertDescription>
+                    </Alert>
+                  )}
+                  {recommendationSuccess && (
+                    <Alert className="border-green-500 text-green-600">
+                      <CheckCircle2 className="h-4 w-4" />
+                      <AlertDescription>{recommendationSuccess}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Person Search */}
+                    <div className="space-y-2 relative" ref={personRef}>
+                      <Label htmlFor="personSearch">Cari Orang *</Label>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="personSearch"
+                          placeholder="Ketik nama orang..."
+                          value={personSearch}
+                          onChange={(e) => {
+                            setPersonSearch(e.target.value);
+                            setShowPersonDropdown(true);
+                          }}
+                          onFocus={() => setShowPersonDropdown(true)}
+                          disabled={recommendationLoading}
+                          className="pl-9 pr-9"
+                        />
+                        {recommendationForm.personId && (
+                          <button
+                            type="button"
+                            onClick={clearPersonSelection}
+                            className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                      
+                      {/* Dropdown Results */}
+                      {showPersonDropdown && personSearch && (
+                        <div className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
+                          {filteredPeople.length > 0 ? (
+                            filteredPeople.map((person) => (
+                              <button
+                                key={person.uuid || person.id}
+                                type="button"
+                                onClick={() => handlePersonSelect(person)}
+                                className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
+                              >
+                                <div className="font-medium">{person.name}</div>
+                                {person.bio && (
+                                  <div className="text-sm text-muted-foreground truncate">{person.bio}</div>
+                                )}
+                              </button>
+                            ))
+                          ) : (
+                            <div className="px-4 py-2 text-sm text-muted-foreground">
+                              Tidak ada hasil
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      <p className="text-xs text-muted-foreground">
+                        {recommendationForm.personId ? (
+                          <span className="text-green-600 font-medium">✓ Terpilih: {recommendationForm.personName}</span>
+                        ) : (
+                          `${people.length} orang tersedia`
+                        )}
+                      </p>
+                    </div>
+
+                    {/* Book Search */}
+                    <div className="space-y-2 relative" ref={bookRef}>
+                      <Label htmlFor="bookSearch">Cari Buku *</Label>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="bookSearch"
+                          placeholder="Ketik judul atau penulis..."
+                          value={bookSearch}
+                          onChange={(e) => {
+                            setBookSearch(e.target.value);
+                            setShowBookDropdown(true);
+                          }}
+                          onFocus={() => setShowBookDropdown(true)}
+                          disabled={recommendationLoading}
+                          className="pl-9 pr-9"
+                        />
+                        {recommendationForm.bookId && (
+                          <button
+                            type="button"
+                            onClick={clearBookSelection}
+                            className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                      
+                      {/* Dropdown Results */}
+                      {showBookDropdown && bookSearch && (
+                        <div className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
+                          {filteredBooks.length > 0 ? (
+                            filteredBooks.map((book) => (
+                              <button
+                                key={book.uuid || book.id}
+                                type="button"
+                                onClick={() => handleBookSelect(book)}
+                                className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
+                              >
+                                <div className="font-medium">{book.title}</div>
+                                <div className="text-sm text-muted-foreground">{book.author}</div>
+                              </button>
+                            ))
+                          ) : (
+                            <div className="px-4 py-2 text-sm text-muted-foreground">
+                              Tidak ada hasil
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      <p className="text-xs text-muted-foreground">
+                        {recommendationForm.bookId ? (
+                          <span className="text-green-600 font-medium">✓ Terpilih: {recommendationForm.bookTitle}</span>
+                        ) : (
+                          `${books.length} buku tersedia`
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Preview */}
+                  {recommendationForm.personId && recommendationForm.bookId && (
+                    <Alert className="border-blue-500 bg-blue-50">
+                      <Link2 className="h-4 w-4 text-blue-600" />
+                      <AlertDescription className="text-blue-900">
+                        <strong>Preview:</strong> {recommendationForm.personName} merekomendasikan "{recommendationForm.bookTitle}"
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  <Button 
+                    type="submit" 
+                    disabled={recommendationLoading || !recommendationForm.personId || !recommendationForm.bookId}
+                  >
+                    {recommendationLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Menambahkan...
+                      </>
+                    ) : (
+                      'Tambah Rekomendasi'
                     )}
                   </Button>
                 </form>
