@@ -145,15 +145,6 @@ export default function Login() {
                 </Link>
               </div>
             </form>
-
-            {/* Info Admin */}
-            <div className="mt-6 p-4 bg-muted rounded-lg">
-              <p className="text-sm font-semibold mb-2">Demo Kredensial:</p>
-              <div className="text-xs space-y-1 text-muted-foreground">
-                <p><strong>Admin:</strong> username: admin, password: 123</p>
-                <p><strong>User:</strong> username: user1, password: 123</p>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
