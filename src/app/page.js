@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search, Book, ExternalLink } from 'lucide-react';
+import PreviouslyViewedBooks from '@/components/PreviouslyViewedBooks';
 
 export default function Home() {
   const [books, setBooks] = useState([]);
@@ -112,6 +113,7 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        <PreviouslyViewedBooks />
         {loading ? (
           <div className="text-center py-20">
             <p className="text-muted-foreground">Memuat buku...</p>
@@ -137,10 +139,12 @@ export default function Home() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredBooks.map((book) => (
-              <Link href={`/book/${book.id}`} key={book.id}>
-                <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
+          <div>
+            <h2 className="text-2xl font-bold mb-4">Best Seller</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredBooks.map((book) => (
+                <Link href={`/book/${book.id}`} key={book.id}>
+                  <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
                   <CardHeader className="p-4">
                     <div className="aspect-[2/3] relative mb-4 bg-muted rounded-md overflow-hidden">
                       {book.cover_image_url ? (
@@ -166,6 +170,7 @@ export default function Home() {
                 </Card>
               </Link>
             ))}
+            </div>
           </div>
         )}
       </main>

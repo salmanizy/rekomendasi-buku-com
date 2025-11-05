@@ -22,6 +22,34 @@ export default function BookDetail() {
     }
   }, [params?.id]);
 
+  useEffect(() => {
+    if (book) {
+      const bookData = {
+        id: book.id,
+        title: book.title,
+        author: book.author,
+        cover_image_url: book.cover_image_url,
+        version: book.version,
+      };
+
+      const storedBooks = localStorage.getItem('previouslyViewed');
+      let viewedBooks = storedBooks ? JSON.parse(storedBooks) : [];
+
+      // Remove the book if it already exists to avoid duplicates and move it to the front
+      viewedBooks = viewedBooks.filter((b) => b.id !== book.id);
+
+      // Add the new book to the beginning of the list
+      viewedBooks.unshift(bookData);
+
+      // Limit the list to 5 books
+      if (viewedBooks.length > 5) {
+        viewedBooks = viewedBooks.slice(0, 5);
+      }
+
+      localStorage.setItem('previouslyViewed', JSON.stringify(viewedBooks));
+    }
+  }, [book]);
+
   const fetchBookDetail = async () => {
     try {
       const response = await fetch(`/api/books/${params.id}`);
