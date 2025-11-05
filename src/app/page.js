@@ -121,12 +121,13 @@ export default function Home() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {filteredBooks.map((book) => (
               <Link href={`/book/${book.id}`} key={book.id}>
-                <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
-                  <CardHeader className="p-4">
-                    <div className="aspect-[2/3] relative mb-4 bg-muted rounded-md overflow-hidden">
+                <Card className="hover:shadow-lg transition-transform transform hover:scale-[1.02] cursor-pointer h-full">
+                  <CardHeader className="p-3 sm:p-4 md:p-5">
+                    {/* Cover */}
+                    <div className="aspect-[2/3] relative mb-3 sm:mb-4 bg-muted rounded-md overflow-hidden">
                       {book.cover_image_url ? (
                         <img
                           src={book.cover_image_url}
@@ -135,23 +136,26 @@ export default function Home() {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Book className="h-12 w-12 text-muted-foreground" />
+                          <Book className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-muted-foreground" />
                         </div>
                       )}
                     </div>
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <CardTitle className="text-lg line-clamp-2">
+
+                    {/* Judul & Versi */}
+                    <div className="flex items-start justify-between gap-2 mb-1 sm:mb-2">
+                      <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg line-clamp-2">
                         {book.title}
                       </CardTitle>
                       <Badge
-                        variant={
-                          book.version === 'imported' ? 'default' : 'secondary'
-                        }
+                        variant={book.version === 'imported' ? 'default' : 'secondary'}
+                        className="text-[10px] sm:text-xs px-2 py-0.5"
                       >
                         {book.version === 'imported' ? 'EN' : 'ID'}
                       </Badge>
                     </div>
-                    <CardDescription className="line-clamp-1">
+
+                    {/* Penulis */}
+                    <CardDescription className="line-clamp-1 text-[10px] sm:text-xs md:text-sm text-muted-foreground">
                       {book.author}
                     </CardDescription>
                   </CardHeader>
