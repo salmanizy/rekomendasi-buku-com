@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search, Book, ExternalLink } from 'lucide-react';
-import PreviouslyViewedBooks from '@/components/PreviouslyViewedBooks';
+import PreviouslyViewedBooks from '@/components/ui/previously-viewed-books';
 
 export default function Home() {
   const [books, setBooks] = useState([]);
