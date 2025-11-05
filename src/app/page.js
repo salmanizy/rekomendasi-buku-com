@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Header from '@/components/ui/header';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Search, Book, ExternalLink } from 'lucide-react';
+import { Search, Book } from 'lucide-react';
 
 export default function Home() {
   const [books, setBooks] = useState([]);
@@ -39,7 +40,6 @@ export default function Home() {
   const filterBooks = () => {
     let filtered = books;
 
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(
         (book) =>
@@ -48,7 +48,6 @@ export default function Home() {
       );
     }
 
-    // Filter by version
     if (filterVersion !== 'all') {
       filtered = filtered.filter((book) => book.version === filterVersion);
     }
@@ -56,61 +55,46 @@ export default function Home() {
     setFilteredBooks(filtered);
   };
 
+  const searchComponent = (
+    <div className="flex flex-col md:flex-row gap-4">
+      <div className="relative flex-1">
+        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+        <Input
+          type="text"
+          placeholder="Cari buku atau penulis..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-10"
+        />
+      </div>
+
+      <div className="flex gap-2">
+        <Button
+          variant={filterVersion === 'all' ? 'default' : 'outline'}
+          onClick={() => setFilterVersion('all')}
+        >
+          Semua
+        </Button>
+        <Button
+          variant={filterVersion === 'imported' ? 'default' : 'outline'}
+          onClick={() => setFilterVersion('imported')}
+        >
+          English
+        </Button>
+        <Button
+          variant={filterVersion === 'translated' ? 'default' : 'outline'}
+          onClick={() => setFilterVersion('translated')}
+        >
+          Terjemahan
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b sticky top-0 bg-background z-10">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <Link href="/" className="flex items-center gap-2">
-              <Book className="h-8 w-8 text-primary" />
-              <h1 className="text-3xl font-bold">diabros</h1>
-            </Link>
-            <div className="flex items-center gap-4">
-              <p className="text-sm text-muted-foreground hidden sm:block">Rekomendasi Buku Indonesia</p>
-              <Link href="/login">
-                <Button variant="outline" size="sm">Login</Button>
-              </Link>
-            </div>
-          </div>
-          
-          {/* Search and Filter */}
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Cari buku atau penulis..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant={filterVersion === 'all' ? 'default' : 'outline'}
-                onClick={() => setFilterVersion('all')}
-              >
-                Semua
-              </Button>
-              <Button
-                variant={filterVersion === 'imported' ? 'default' : 'outline'}
-                onClick={() => setFilterVersion('imported')}
-              >
-                English
-              </Button>
-              <Button
-                variant={filterVersion === 'translated' ? 'default' : 'outline'}
-                onClick={() => setFilterVersion('translated')}
-              >
-                Terjemahan
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header searchComponent={searchComponent} />
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         {loading ? (
           <div className="text-center py-20">
@@ -156,12 +140,20 @@ export default function Home() {
                       )}
                     </div>
                     <div className="flex items-start justify-between gap-2 mb-2">
-                      <CardTitle className="text-lg line-clamp-2">{book.title}</CardTitle>
-                      <Badge variant={book.version === 'imported' ? 'default' : 'secondary'}>
+                      <CardTitle className="text-lg line-clamp-2">
+                        {book.title}
+                      </CardTitle>
+                      <Badge
+                        variant={
+                          book.version === 'imported' ? 'default' : 'secondary'
+                        }
+                      >
                         {book.version === 'imported' ? 'EN' : 'ID'}
                       </Badge>
                     </div>
-                    <CardDescription className="line-clamp-1">{book.author}</CardDescription>
+                    <CardDescription className="line-clamp-1">
+                      {book.author}
+                    </CardDescription>
                   </CardHeader>
                 </Card>
               </Link>
