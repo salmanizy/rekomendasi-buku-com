@@ -105,7 +105,7 @@ export default function PersonDetail() {
           </CardHeader>
           <CardContent>
             {books.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                 {books.map((book) => (
                   <Link href={`/book/${book.id}`} key={book.id}>
                     <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
