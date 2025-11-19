@@ -374,9 +374,9 @@ export default function AdminPanel() {
         {/* Forms */}
         <Tabs defaultValue="books" className="space-y-4">
           <TabsList className="grid w-full grid-cols-3 max-w-2xl">
-            <TabsTrigger value="books">Tambah Buku</TabsTrigger>
-            <TabsTrigger value="people">Tambah Orang</TabsTrigger>
-            <TabsTrigger value="recommendations">Tambah Rekomendasi</TabsTrigger>
+            <TabsTrigger value="books">Add Book</TabsTrigger>
+            <TabsTrigger value="people">Add People</TabsTrigger>
+            <TabsTrigger value="recommendations">Add Rec</TabsTrigger>
           </TabsList>
 
           {/* Add Book Form */}
