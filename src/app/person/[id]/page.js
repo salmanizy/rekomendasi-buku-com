@@ -116,20 +116,28 @@ export default function PersonDetail() {
                               src={book.cover_image_url}
                               alt={book.title}
                               className="w-full h-full object-cover"
+                              loading='lazy'
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
-                              <Book className="h-12 w-12 text-muted-foreground" />
+                              <Book className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-muted-foreground" />
                             </div>
                           )}
                         </div>
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <CardTitle className="text-lg line-clamp-2">{book.title}</CardTitle>
-                          <Badge variant={book.version === 'imported' ? 'default' : 'secondary'}>
+                        <div className="flex items-start justify-between gap-2 mb-1 sm:mb-2">
+                          <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg line-clamp-2">
+                            {book.title}
+                          </CardTitle>
+                          <Badge
+                            variant={book.version === 'imported' ? 'default' : 'secondary'}
+                            className="text-[10px] sm:text-xs px-2 py-0.5"
+                          >
                             {book.version === 'imported' ? 'EN' : 'ID'}
                           </Badge>
                         </div>
-                        <CardDescription className="line-clamp-1">{book.author}</CardDescription>
+                        <CardDescription className="line-clamp-1 text-[10px] sm:text-xs md:text-sm text-muted-foreground">
+                          {book.author}
+                        </CardDescription>
                       </CardHeader>
                     </Card>
                   </Link>

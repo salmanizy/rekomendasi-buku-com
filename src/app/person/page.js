@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Input } from '@/components/ui/input';
@@ -10,12 +10,27 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Search, Book, User } from 'lucide-react';
 import Header from '@/components/ui/header';
 
+function useDebounce(value, delay = 500) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(timeoutId);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
 export default function PeoplePage() {
   const pathname = usePathname();
   const [people, setPeople] = useState([]);
-  const [filteredPeople, setFilteredPeople] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const searchBar = (
     <div className="relative flex-1">
@@ -34,31 +49,28 @@ export default function PeoplePage() {
     fetchPeople();
   }, []);
 
-  useEffect(() => {
-    filterPeople();
-  }, [searchTerm, people]);
+  const filteredPeople = useMemo(() => {
+    let filtered = people;
+
+    if (debouncedSearchTerm) {
+      filtered = filtered.filter(
+        (person) =>
+          person.name?.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      );
+    }
+
+    return filtered;
+  }, [debouncedSearchTerm, people]);
 
   const fetchPeople = async () => {
     try {
       const response = await fetch('/api/people');
       const data = await response.json();
       setPeople(data.people || []);
-      setFilteredPeople(data.people || []);
     } catch (error) {
       console.error('Error fetching people:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const filterPeople = () => {
-    if (searchTerm) {
-      const filtered = people.filter((person) =>
-        person.name?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredPeople(filtered);
-    } else {
-      setFilteredPeople(people);
     }
   };
 

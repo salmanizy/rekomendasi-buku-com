@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Header from '@/components/ui/header';
 import { Input } from '@/components/ui/input';
@@ -9,42 +9,40 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { Badge } from '@/components/ui/badge';
 import { Search, Book } from 'lucide-react';
 
+function useDebounce(value, delay = 500) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(timeoutId);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
 export default function Home() {
   const [books, setBooks] = useState([]);
-  const [filteredBooks, setFilteredBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterVersion, setFilterVersion] = useState('all');
   const [loading, setLoading] = useState(true);
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   useEffect(() => {
     fetchBooks();
   }, []);
 
-  useEffect(() => {
-    filterBooks();
-  }, [searchTerm, filterVersion, books]);
-
-  const fetchBooks = async () => {
-    try {
-      const response = await fetch('/api/books');
-      const data = await response.json();
-      setBooks(data.books || []);
-      setFilteredBooks(data.books || []);
-    } catch (error) {
-      console.error('Error fetching books:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filterBooks = () => {
+  const filteredBooks = useMemo(() => {
     let filtered = books;
 
-    if (searchTerm) {
+    if (debouncedSearchTerm) {
       filtered = filtered.filter(
         (book) =>
-          book.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          book.author?.toLowerCase().includes(searchTerm.toLowerCase())
+          book.title?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+          book.author?.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
       );
     }
 
@@ -52,7 +50,19 @@ export default function Home() {
       filtered = filtered.filter((book) => book.version === filterVersion);
     }
 
-    setFilteredBooks(filtered);
+    return filtered;
+  }, [debouncedSearchTerm, filterVersion, books]);
+
+  const fetchBooks = async () => {
+    try {
+      const response = await fetch('/api/books');
+      const data = await response.json();
+      setBooks(data.books || []);
+    } catch (error) {
+      console.error('Error fetching books:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const searchComponent = (
