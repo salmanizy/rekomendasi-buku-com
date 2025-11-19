@@ -85,6 +85,7 @@ export default function BookDetail() {
                       src={book.cover_image_url}
                       alt={book.title}
                       className="w-full h-full object-cover"
+                      loading='lazy'
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
