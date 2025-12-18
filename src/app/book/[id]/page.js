@@ -69,7 +69,7 @@ export default function BookDetail() {
             Kembali
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Book Cover and Info */}
           <div className="lg:col-span-1">
             <Card>
@@ -131,7 +131,7 @@ export default function BookDetail() {
               </CardHeader>
               <CardContent>
                 {people.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4">
                     {people.map((people) => (
                       <Link href={`/people/${people.id}`} key={people.id}>
                         <Card className="hover:shadow-md transition-shadow cursor-pointer">
