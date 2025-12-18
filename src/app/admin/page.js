@@ -35,20 +35,20 @@ export default function AdminPanel() {
   const [bookLoading, setBookLoading] = useState(false);
 
   // Person form state
-  const [personForm, setPersonForm] = useState({
+  const [peopleForm, setPeopleForm] = useState({
     name: '',
     bio: '',
     avatarUrl: ''
   });
-  const [personError, setPersonError] = useState('');
-  const [personSuccess, setPersonSuccess] = useState('');
-  const [personLoading, setPersonLoading] = useState(false);
+  const [peopleError, setPeopleError] = useState('');
+  const [peopleSuccess, setPeopleSuccess] = useState('');
+  const [peopleLoading, setPeopleLoading] = useState(false);
 
   // Recommendation form state
   const [recommendationForm, setRecommendationForm] = useState({
-    personId: '',
+    peopleId: '',
     bookId: '',
-    personName: '',
+    peopleName: '',
     bookTitle: ''
   });
   const [recommendationError, setRecommendationError] = useState('');
@@ -56,11 +56,11 @@ export default function AdminPanel() {
   const [recommendationLoading, setRecommendationLoading] = useState(false);
 
   // Search states
-  const [personSearch, setPersonSearch] = useState('');
+  const [peopleSearch, setPeopleSearch] = useState('');
   const [bookSearch, setBookSearch] = useState('');
-  const [showPersonDropdown, setShowPersonDropdown] = useState(false);
+  const [showPeopleDropdown, setShowPeopleDropdown] = useState(false);
   const [showBookDropdown, setShowBookDropdown] = useState(false);
-  const personRef = useRef(null);
+  const peopleRef = useRef(null);
   const bookRef = useRef(null);
 
   // Check authentication
@@ -85,8 +85,8 @@ export default function AdminPanel() {
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (personRef.current && !personRef.current.contains(event.target)) {
-        setShowPersonDropdown(false);
+      if (peopleRef.current && !peopleRef.current.contains(event.target)) {
+        setShowPeopleDropdown(false);
       }
       if (bookRef.current && !bookRef.current.contains(event.target)) {
         setShowBookDropdown(false);
@@ -162,44 +162,44 @@ export default function AdminPanel() {
     }
   };
 
-  const handlePersonSubmit = async (e) => {
+  const handlePeopleSubmit = async (e) => {
     e.preventDefault();
-    setPersonError('');
-    setPersonSuccess('');
+    setPeopleError('');
+    setPeopleSuccess('');
 
-    if (!personForm.name) {
-      setPersonError('Nama harus diisi!');
+    if (!peopleForm.name) {
+      setPeopleError('Nama harus diisi!');
       return;
     }
 
-    setPersonLoading(true);
+    setPeopleLoading(true);
 
     try {
       const response = await fetch('/api/admin/people', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(personForm)
+        body: JSON.stringify(peopleForm)
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setPersonSuccess('Orang berhasil ditambahkan!');
-        setPersonForm({
+        setPeopleSuccess('Orang berhasil ditambahkan!');
+        setPeopleForm({
           name: '',
           bio: '',
           avatarUrl: ''
         });
         fetchData();
-        setTimeout(() => setPersonSuccess(''), 3000);
+        setTimeout(() => setPeopleSuccess(''), 3000);
       } else {
-        setPersonError(data.error || 'Gagal menambahkan orang!');
+        setPeopleError(data.error || 'Gagal menambahkan orang!');
       }
     } catch (error) {
       console.error('Error:', error);
-      setPersonError('Terjadi kesalahan. Silakan coba lagi.');
+      setPeopleError('Terjadi kesalahan. Silakan coba lagi.');
     } finally {
-      setPersonLoading(false);
+      setPeopleLoading(false);
     }
   };
 
@@ -208,8 +208,8 @@ export default function AdminPanel() {
     setRecommendationError('');
     setRecommendationSuccess('');
 
-    if (!recommendationForm.personId || !recommendationForm.bookId) {
-      setRecommendationError('Person dan Buku harus dipilih!');
+    if (!recommendationForm.peopleId || !recommendationForm.bookId) {
+      setRecommendationError('People dan Buku harus dipilih!');
       return;
     }
 
@@ -220,7 +220,7 @@ export default function AdminPanel() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          person_id: recommendationForm.personId,
+          people_id: recommendationForm.peopleId,
           book_id: recommendationForm.bookId
         })
       });
@@ -230,12 +230,12 @@ export default function AdminPanel() {
       if (response.ok) {
         setRecommendationSuccess('Rekomendasi berhasil ditambahkan!');
         setRecommendationForm({
-          personId: '',
+          peopleId: '',
           bookId: '',
-          personName: '',
+          peopleName: '',
           bookTitle: ''
         });
-        setPersonSearch('');
+        setPeopleSearch('');
         setBookSearch('');
         fetchData();
         setTimeout(() => setRecommendationSuccess(''), 3000);
@@ -252,7 +252,7 @@ export default function AdminPanel() {
 
   // Filter people based on search
   const filteredPeople = people.filter(person =>
-    person.name.toLowerCase().includes(personSearch.toLowerCase())
+    person.name.toLowerCase().includes(peopleSearch.toLowerCase())
   );
 
   // Filter books based on search
@@ -262,14 +262,14 @@ export default function AdminPanel() {
   );
 
   // Handle person selection
-  const handlePersonSelect = (person) => {
+  const handlePeopleSelect = (person) => {
     setRecommendationForm({
       ...recommendationForm,
-      personId: person.uuid || person.id,
-      personName: person.name
+      peopleId: person.uuid || person.id,
+      peopleName: person.name
     });
-    setPersonSearch(person.name);
-    setShowPersonDropdown(false);
+    setPeopleSearch(person.name);
+    setShowPeopleDropdown(false);
   };
 
   // Handle book selection
@@ -284,13 +284,13 @@ export default function AdminPanel() {
   };
 
   // Clear person selection
-  const clearPersonSelection = () => {
+  const clearPeopleSelection = () => {
     setRecommendationForm({
       ...recommendationForm,
-      personId: '',
-      personName: ''
+      peopleId: '',
+      peopleName: ''
     });
-    setPersonSearch('');
+    setPeopleSearch('');
   };
 
   // Clear book selection
@@ -512,77 +512,77 @@ export default function AdminPanel() {
 
           {/* Add Person Form */}
           <TabsContent value="people">
-            <Card>
-              <CardHeader>
-                <CardTitle>Tambah Orang Baru</CardTitle>
-                <CardDescription>
-                  Tambahkan orang yang merekomendasikan buku
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handlePersonSubmit} className="space-y-4">
-                  {personError && (
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>{personError}</AlertDescription>
-                    </Alert>
+          <Card>
+            <CardHeader>
+              <CardTitle>Tambah Orang Baru</CardTitle>
+              <CardDescription>
+                Tambahkan orang yang merekomendasikan buku
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handlePeopleSubmit} className="space-y-4">
+                {peopleError && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{peopleError}</AlertDescription>
+                  </Alert>
+                )}
+                {peopleSuccess && (
+                  <Alert className="border-green-500 text-green-600">
+                    <CheckCircle2 className="h-4 w-4" />
+                    <AlertDescription>{peopleSuccess}</AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="name">Nama *</Label>
+                  <Input
+                    id="name"
+                    placeholder="Contoh: Elon Musk"
+                    value={peopleForm.name}
+                    onChange={(e) => setPeopleForm({ ...peopleForm, name: e.target.value })}
+                    disabled={peopleLoading}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="bio">Bio</Label>
+                  <Textarea
+                    id="bio"
+                    placeholder="Deskripsi singkat tentang orang ini..."
+                    value={peopleForm.bio}
+                    onChange={(e) => setPeopleForm({ ...peopleForm, bio: e.target.value })}
+                    disabled={peopleLoading}
+                    rows={4}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="avatarUrl">URL Avatar</Label>
+                  <Input
+                    id="avatarUrl"
+                    placeholder="https://example.com/avatar.jpg"
+                    value={peopleForm.avatarUrl}
+                    onChange={(e) => setPeopleForm({ ...peopleForm, avatarUrl: e.target.value })}
+                    disabled={peopleLoading}
+                  />
+                </div>
+
+                <Button type="submit" disabled={peopleLoading}>
+                  {peopleLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Menambahkan...
+                    </>
+                  ) : (
+                    'Tambah Orang'
                   )}
-                  {personSuccess && (
-                    <Alert className="border-green-500 text-green-600">
-                      <CheckCircle2 className="h-4 w-4" />
-                      <AlertDescription>{personSuccess}</AlertDescription>
-                    </Alert>
-                  )}
-
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Nama *</Label>
-                    <Input
-                      id="name"
-                      placeholder="Contoh: Elon Musk"
-                      value={personForm.name}
-                      onChange={(e) => setPersonForm({ ...personForm, name: e.target.value })}
-                      disabled={personLoading}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="bio">Bio</Label>
-                    <Textarea
-                      id="bio"
-                      placeholder="Deskripsi singkat tentang orang ini..."
-                      value={personForm.bio}
-                      onChange={(e) => setPersonForm({ ...personForm, bio: e.target.value })}
-                      disabled={personLoading}
-                      rows={4}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="avatarUrl">URL Avatar</Label>
-                    <Input
-                      id="avatarUrl"
-                      placeholder="https://example.com/avatar.jpg"
-                      value={personForm.avatarUrl}
-                      onChange={(e) => setPersonForm({ ...personForm, avatarUrl: e.target.value })}
-                      disabled={personLoading}
-                    />
-                  </div>
-
-                  <Button type="submit" disabled={personLoading}>
-                    {personLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Menambahkan...
-                      </>
-                    ) : (
-                      'Tambah Orang'
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
           {/* Add Recommendation Form */}
           <TabsContent value="recommendations">
@@ -609,27 +609,27 @@ export default function AdminPanel() {
                   )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Person Search */}
-                    <div className="space-y-2 relative" ref={personRef}>
-                      <Label htmlFor="personSearch">Cari Orang *</Label>
+                    {/* People Search */}
+                    <div className="space-y-2 relative" ref={peopleRef}>
+                      <Label htmlFor="peopleSearch">Cari People *</Label>
                       <div className="relative">
                         <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <Input
-                          id="personSearch"
+                          id="peopleSearch"
                           placeholder="Ketik nama orang..."
-                          value={personSearch}
+                          value={peopleSearch}
                           onChange={(e) => {
-                            setPersonSearch(e.target.value);
-                            setShowPersonDropdown(true);
+                            setPeopleSearch(e.target.value);
+                            setShowPeopleDropdown(true);
                           }}
-                          onFocus={() => setShowPersonDropdown(true)}
+                          onFocus={() => setShowPeopleDropdown(true)}
                           disabled={recommendationLoading}
                           className="pl-9 pr-9"
                         />
-                        {recommendationForm.personId && (
+                        {recommendationForm.peopleId && (
                           <button
                             type="button"
-                            onClick={clearPersonSelection}
+                            onClick={clearPeopleSelection}
                             className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
                           >
                             <X className="h-4 w-4" />
@@ -638,14 +638,14 @@ export default function AdminPanel() {
                       </div>
                       
                       {/* Dropdown Results */}
-                      {showPersonDropdown && personSearch && (
+                      {showPeopleDropdown && peopleSearch && (
                         <div className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
                           {filteredPeople.length > 0 ? (
                             filteredPeople.map((person) => (
                               <button
                                 key={person.uuid || person.id}
                                 type="button"
-                                onClick={() => handlePersonSelect(person)}
+                                onClick={() => handlePeopleSelect(person)}
                                 className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
                               >
                                 <div className="font-medium">{person.name}</div>
@@ -663,8 +663,8 @@ export default function AdminPanel() {
                       )}
                       
                       <p className="text-xs text-muted-foreground">
-                        {recommendationForm.personId ? (
-                          <span className="text-green-600 font-medium">✓ Terpilih: {recommendationForm.personName}</span>
+                        {recommendationForm.peopleId ? (
+                          <span className="text-green-600 font-medium">✓ Terpilih: {recommendationForm.peopleName}</span>
                         ) : (
                           `${people.length} orang tersedia`
                         )}

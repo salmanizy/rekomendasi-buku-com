@@ -33,7 +33,8 @@ export async function GET(request) {
       const { data: recommendations, error: recError } = await supabase
         .from('recommendations')
         .select(`
-          person_id,
+          people_id,
+          quotes,
           people (
             id,
             name,
@@ -63,12 +64,12 @@ export async function GET(request) {
     
     // Get single person with their recommendations
     if (pathname.startsWith('/api/people/')) {
-      const personId = pathname.split('/').pop();
+      const peopleId = pathname.split('/').pop();
       
       const { data: person, error: personError } = await supabase
         .from('people')
         .select('*')
-        .eq('id', personId)
+        .eq('id', peopleId)
         .single();
       
       if (personError) throw personError;
@@ -78,6 +79,7 @@ export async function GET(request) {
         .from('recommendations')
         .select(`
           book_id,
+          quotes,
           books (
             id,
             title,
@@ -87,7 +89,7 @@ export async function GET(request) {
             tokopedia_url
           )
         `)
-        .eq('person_id', personId);
+        .eq('people_id', peopleId);
       
       if (recError) throw recError;
       

@@ -33,9 +33,9 @@ export default function Header({ searchComponent }) {
               Books
             </Link>
             <Link
-              href="/person"
+              href="/people"
               className={`text-sm font-medium transition-colors hover:text-primary ${
-                pathname.startsWith('/person')
+                pathname.startsWith('/people')
                   ? 'text-primary'
                   : 'text-muted-foreground'
               }`}
@@ -102,9 +102,9 @@ export default function Header({ searchComponent }) {
                 Books
               </Link>
               <Link
-                href="/person"
+                href="/people"
                 className={`text-sm font-medium transition-colors hover:text-primary ${
-                  pathname.startsWith('/person')
+                  pathname.startsWith('/people')
                     ? 'text-primary'
                     : 'text-muted-foreground'
                 }`}

@@ -143,7 +143,7 @@ export default function BookDetail() {
                 {people.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {people.map((person) => (
-                      <Link href={`/person/${person.id}`} key={person.id}>
+                      <Link href={`/people/${person.id}`} key={person.id}>
                         <Card className="hover:shadow-md transition-shadow cursor-pointer">
                           <CardContent className="p-4">
                             <div className="flex items-center gap-3">

@@ -11,24 +11,24 @@ import { ArrowLeft, Book, User } from 'lucide-react';
 
 export default function PersonDetail() {
   const params = useParams();
-  const [person, setPerson] = useState(null);
+  const [people, setPeople] = useState(null);
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (params?.id) {
-      fetchPersonDetail();
+      fetchPeopleDetail();
     }
   }, [params?.id]);
 
-  const fetchPersonDetail = async () => {
+  const fetchPeopleDetail = async () => {
     try {
       const response = await fetch(`/api/people/${params.id}`);
       const data = await response.json();
-      setPerson(data.person);
+      setPeople(data.person);
       setBooks(data.books || []);
     } catch (error) {
-      console.error('Error fetching person details:', error);
+      console.error('Error fetching people details:', error);
     } finally {
       setLoading(false);
     }
@@ -42,7 +42,7 @@ export default function PersonDetail() {
     );
   }
 
-  if (!person) {
+  if (!people) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -78,15 +78,15 @@ export default function PersonDetail() {
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row gap-6 items-start">
               <Avatar className="h-24 w-24">
-                <AvatarImage src={person.avatar_url} alt={person.name} />
+                <AvatarImage src={people.avatar_url} alt={people.name} />
                 <AvatarFallback className="text-2xl">
-                  {person.name?.charAt(0)?.toUpperCase() || 'U'}
+                  {people.name?.charAt(0)?.toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <h1 className="text-3xl font-bold mb-2">{person.name}</h1>
+                <h1 className="text-3xl font-bold mb-2">Buku Rekomendasi {people.name}</h1>
                 <p className="text-muted-foreground leading-relaxed">
-                  {person.bio || 'Tidak ada bio tersedia.'}
+                  {people.bio || 'Tidak ada bio tersedia.'}
                 </p>
               </div>
             </div>
@@ -99,8 +99,8 @@ export default function PersonDetail() {
             <CardTitle>Buku yang Direkomendasikan</CardTitle>
             <CardDescription>
               {books.length > 0
-                ? `${books.length} buku yang direkomendasikan oleh ${person.name}`
-                : `${person.name} belum merekomendasikan buku apapun`}
+                ? `${books.length} buku yang direkomendasikan oleh ${people.name}`
+                : `${people.name} belum merekomendasikan buku apapun`}
             </CardDescription>
           </CardHeader>
           <CardContent>

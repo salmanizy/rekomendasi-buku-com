@@ -119,7 +119,7 @@ export default function PeoplePage() {
         ) : (
           <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {filteredPeople.map((person) => (
-              <Link href={`/person/${person.uuid || person.id}`} key={person.uuid || person.id}>
+              <Link href={`/people/${person.uuid || person.id}`} key={person.uuid || person.id}>
                 <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
                   <CardHeader className="text-center p-3 sm:p-4 md:p-6">
                     {/* Avatar */}
