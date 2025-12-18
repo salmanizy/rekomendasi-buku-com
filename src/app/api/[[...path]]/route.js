@@ -34,6 +34,8 @@ export async function GET(request) {
         .from('recommendations')
         .select(`
           person_id,
+          quote,
+          source,
           people (
             id,
             name,
@@ -45,9 +47,62 @@ export async function GET(request) {
       
       if (recError) throw recError;
       
-      const people = recommendations?.map(r => r.people) || [];
+      const people = recommendations?.map(r => ({
+        ...r.people,
+        quote: r.quote,
+        source: r.source
+      })) || [];
       
       return NextResponse.json({ book, people });
+    }
+    
+    // Search endpoint for autocomplete
+    if (pathname === '/api/search') {
+      const { searchParams } = new URL(request.url);
+      const query = searchParams.get('q')?.toLowerCase() || '';
+      
+      if (!query || query.length < 2) {
+        return NextResponse.json({ results: [] });
+      }
+      
+      // Search books
+      const { data: books, error: booksError } = await supabase
+        .from('books')
+        .select('id, title, author, cover_image_url')
+        .or(`title.ilike.%${query}%,author.ilike.%${query}%`)
+        .limit(5);
+      
+      if (booksError) console.error('Books search error:', booksError);
+      
+      // Search people
+      const { data: people, error: peopleError } = await supabase
+        .from('people')
+        .select('id, name, bio, avatar_url')
+        .ilike('name', `%${query}%`)
+        .limit(5);
+      
+      if (peopleError) console.error('People search error:', peopleError);
+      
+      const results = [
+        ...(books || []).map(book => ({
+          type: 'book',
+          id: book.id,
+          title: book.title,
+          subtitle: book.author,
+          image: book.cover_image_url,
+          url: `/book/${book.id}`
+        })),
+        ...(people || []).map(person => ({
+          type: 'person',
+          id: person.id,
+          title: person.name,
+          subtitle: person.bio,
+          image: person.avatar_url,
+          url: `/person/${person.id}`
+        }))
+      ];
+      
+      return NextResponse.json({ results });
     }
     
     // Get all people
@@ -78,6 +133,8 @@ export async function GET(request) {
         .from('recommendations')
         .select(`
           book_id,
+          quote,
+          source,
           books (
             id,
             title,
@@ -91,7 +148,11 @@ export async function GET(request) {
       
       if (recError) throw recError;
       
-      const books = recommendations?.map(r => r.books) || [];
+      const books = recommendations?.map(r => ({
+        ...r.books,
+        quote: r.quote,
+        source: r.source
+      })) || [];
       
       return NextResponse.json({ person, books });
     }
@@ -260,6 +321,51 @@ export async function POST(request) {
       return NextResponse.json({ 
         message: 'Orang berhasil ditambahkan!',
         person: data 
+      });
+    }
+    
+    // Admin - Add recommendation
+    if (pathname === '/api/admin/recommendations') {
+      const { person_id, book_id, quote, source } = body;
+      
+      if (!person_id || !book_id) {
+        return NextResponse.json(
+          { error: 'Person ID dan Book ID harus diisi!' },
+          { status: 400 }
+        );
+      }
+      
+      // Check if recommendation already exists
+      const { data: existingRec } = await supabase
+        .from('recommendations')
+        .select('id')
+        .eq('person_id', person_id)
+        .eq('book_id', book_id)
+        .limit(1);
+      
+      if (existingRec && existingRec.length > 0) {
+        return NextResponse.json(
+          { error: 'Rekomendasi ini sudah ada!' },
+          { status: 400 }
+        );
+      }
+      
+      const { data, error } = await supabase
+        .from('recommendations')
+        .insert([{
+          person_id,
+          book_id,
+          quote: quote || null,
+          source: source || null
+        }])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return NextResponse.json({ 
+        message: 'Rekomendasi berhasil ditambahkan!',
+        recommendation: data 
       });
     }
     

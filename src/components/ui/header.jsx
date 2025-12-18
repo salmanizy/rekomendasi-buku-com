@@ -4,9 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Book } from 'lucide-react';
 
-export default function Header({ searchComponent }) {
+export default function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -17,41 +16,31 @@ export default function Header({ searchComponent }) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center gap-2">
-              <Book className="h-6 w-6 text-primary" />
-              <h1 className="text-2xl font-bold">diabros</h1>
+              <h1 className="text-2xl font-black">REKOBU</h1>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden md:flex items-center justify-center gap-6">
             <Link
               href="/"
               className={`text-sm font-medium transition-colors hover:text-primary ${
                 pathname === '/' ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              Books
+              Home
             </Link>
             <Link
-              href="/person"
+              href="/book"
               className={`text-sm font-medium transition-colors hover:text-primary ${
-                pathname.startsWith('/person')
+                pathname.startsWith('/book')
                   ? 'text-primary'
                   : 'text-muted-foreground'
               }`}
             >
-              People
+              Books
             </Link>
           </nav>
-
-          {/* Right Section */}
-          <div className="hidden md:flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="outline" size="sm">
-                Login
-              </Button>
-            </Link>
-          </div>
 
           {/* Mobile Menu Button */}
           <button
@@ -84,10 +73,6 @@ export default function Header({ searchComponent }) {
           </button>
         </div>
 
-        {searchComponent && (
-          <div className="relative w-full">{searchComponent}</div>
-        )}
-
         {/* Mobile Dropdown Menu */}
         {menuOpen && (
           <div className="md:hidden border-t bg-background px-4 py-3 animate-in fade-in-50 slide-in-from-top-2">
@@ -99,27 +84,19 @@ export default function Header({ searchComponent }) {
                 }`}
                 onClick={() => setMenuOpen(false)}
               >
-                Books
+                Home
               </Link>
               <Link
-                href="/person"
+                href="/book"
                 className={`text-sm font-medium transition-colors hover:text-primary ${
-                  pathname.startsWith('/person')
+                  pathname.startsWith('/book')
                     ? 'text-primary'
                     : 'text-muted-foreground'
                 }`}
                 onClick={() => setMenuOpen(false)}
               >
-                People
+                Books
               </Link>
-
-              <div className="flex items-center justify-between pt-2 border-t mt-2">
-                <Link href="/login">
-                  <Button variant="outline" size="sm">
-                    Login
-                  </Button>
-                </Link>
-              </div>
             </nav>
           </div>
         )}

@@ -14,7 +14,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { person_id, book_id } = body;
+    const { person_id, book_id, quote, source } = body;
 
     // Validasi input
     if (!person_id || !book_id) {
@@ -44,10 +44,18 @@ export async function POST(request) {
       );
     }
 
+    // Prepare insert data
+    const insertData = {
+      person_id,
+      book_id,
+      quote: quote || null,
+      source: source || null
+    };
+
     // Insert new recommendation
     const { data, error } = await supabase
       .from('recommendations')
-      .insert([{ person_id, book_id }])
+      .insert([insertData])
       .select();
 
     if (error) {

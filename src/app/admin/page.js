@@ -10,8 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Book, User, LogOut, AlertCircle, CheckCircle2, Loader2, Link2, Search, X } from 'lucide-react';
+import { Book, LogOut, AlertCircle, CheckCircle2, Loader2, Link2, Search, X } from 'lucide-react';
 
 export default function AdminPanel() {
   const router = useRouter();
@@ -26,7 +25,6 @@ export default function AdminPanel() {
     author: '',
     description: '',
     coverImageUrl: '',
-    version: 'imported',
     tokopediaUrl: '',
     openlibraryId: ''
   });
@@ -49,7 +47,9 @@ export default function AdminPanel() {
     personId: '',
     bookId: '',
     personName: '',
-    bookTitle: ''
+    bookTitle: '',
+    quote: '',
+    source: ''
   });
   const [recommendationError, setRecommendationError] = useState('');
   const [recommendationSuccess, setRecommendationSuccess] = useState('');
@@ -80,7 +80,7 @@ export default function AdminPanel() {
     setUser(parsedUser);
     setLoading(false);
     fetchData();
-  }, []);
+  }, [router]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -103,12 +103,20 @@ export default function AdminPanel() {
         fetch('/api/books'),
         fetch('/api/people')
       ]);
+      
+      if (!booksRes.ok || !peopleRes.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      
       const booksData = await booksRes.json();
       const peopleData = await peopleRes.json();
+      
       setBooks(booksData.books || []);
       setPeople(peopleData.people || []);
     } catch (error) {
       console.error('Error fetching data:', error);
+      setBooks([]);
+      setPeople([]);
     }
   };
 
@@ -145,7 +153,6 @@ export default function AdminPanel() {
           author: '',
           description: '',
           coverImageUrl: '',
-          version: 'imported',
           tokopediaUrl: '',
           openlibraryId: ''
         });
@@ -216,13 +223,24 @@ export default function AdminPanel() {
     setRecommendationLoading(true);
 
     try {
+      const payload = {
+        person_id: recommendationForm.personId,
+        book_id: recommendationForm.bookId,
+      };
+
+      // Only add quote and source if they have values
+      if (recommendationForm.quote && recommendationForm.quote.trim()) {
+        payload.quote = recommendationForm.quote.trim();
+      }
+      
+      if (recommendationForm.source && recommendationForm.source.trim()) {
+        payload.source = recommendationForm.source.trim();
+      }
+
       const response = await fetch('/api/admin/recommendations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          person_id: recommendationForm.personId,
-          book_id: recommendationForm.bookId
-        })
+        body: JSON.stringify(payload)
       });
 
       const data = await response.json();
@@ -233,7 +251,9 @@ export default function AdminPanel() {
           personId: '',
           bookId: '',
           personName: '',
-          bookTitle: ''
+          bookTitle: '',
+          quote: '',
+          source: ''
         });
         setPersonSearch('');
         setBookSearch('');
@@ -252,13 +272,13 @@ export default function AdminPanel() {
 
   // Filter people based on search
   const filteredPeople = people.filter(person =>
-    person.name.toLowerCase().includes(personSearch.toLowerCase())
+    person.name && person.name.toLowerCase().includes(personSearch.toLowerCase())
   );
 
   // Filter books based on search
   const filteredBooks = books.filter(book =>
-    book.title.toLowerCase().includes(bookSearch.toLowerCase()) ||
-    book.author.toLowerCase().includes(bookSearch.toLowerCase())
+    (book.title && book.title.toLowerCase().includes(bookSearch.toLowerCase())) ||
+    (book.author && book.author.toLowerCase().includes(bookSearch.toLowerCase()))
   );
 
   // Handle person selection
@@ -441,34 +461,15 @@ export default function AdminPanel() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="version">Versi *</Label>
-                      <Select
-                        value={bookForm.version}
-                        onValueChange={(value) => setBookForm({ ...bookForm, version: value })}
-                        disabled={bookLoading}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="imported">English (Imported)</SelectItem>
-                          <SelectItem value="translated">Indonesian (Terjemahan)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="coverImageUrl">URL Cover</Label>
-                      <Input
-                        id="coverImageUrl"
-                        placeholder="https://covers.openlibrary.org/..."
-                        value={bookForm.coverImageUrl}
-                        onChange={(e) => setBookForm({ ...bookForm, coverImageUrl: e.target.value })}
-                        disabled={bookLoading}
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="coverImageUrl">URL Cover</Label>
+                    <Input
+                      id="coverImageUrl"
+                      placeholder="https://covers.openlibrary.org/..."
+                      value={bookForm.coverImageUrl}
+                      onChange={(e) => setBookForm({ ...bookForm, coverImageUrl: e.target.value })}
+                      disabled={bookLoading}
+                    />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -732,12 +733,54 @@ export default function AdminPanel() {
                     </div>
                   </div>
 
+                  {/* Quote Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="quote">Kutipan / Alasan Rekomendasi</Label>
+                    <Textarea
+                      id="quote"
+                      placeholder="Contoh: Buku ini mengubah cara saya memandang sejarah manusia..."
+                      value={recommendationForm.quote}
+                      onChange={(e) => setRecommendationForm({ ...recommendationForm, quote: e.target.value })}
+                      disabled={recommendationLoading}
+                      rows={3}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Masukkan kutipan atau alasan mengapa orang ini merekomendasikan buku tersebut
+                    </p>
+                  </div>
+
+                  {/* Source Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="source">Sumber (URL)</Label>
+                    <Input
+                      id="source"
+                      type="url"
+                      placeholder="https://twitter.com/username/status/..."
+                      value={recommendationForm.source}
+                      onChange={(e) => setRecommendationForm({ ...recommendationForm, source: e.target.value })}
+                      disabled={recommendationLoading}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Link ke sumber kutipan (Twitter, artikel, podcast, dll)
+                    </p>
+                  </div>
+
                   {/* Preview */}
                   {recommendationForm.personId && recommendationForm.bookId && (
                     <Alert className="border-blue-500 bg-blue-50">
                       <Link2 className="h-4 w-4 text-blue-600" />
                       <AlertDescription className="text-blue-900">
                         <strong>Preview:</strong> {recommendationForm.personName} merekomendasikan &quot;{recommendationForm.bookTitle}&quot;
+                        {recommendationForm.quote && (
+                          <div className="mt-2 italic text-sm">
+                            &quot;{recommendationForm.quote}&quot;
+                          </div>
+                        )}
+                        {recommendationForm.source && (
+                          <div className="mt-1 text-xs">
+                            Sumber: <a href={recommendationForm.source} target="_blank" rel="noopener noreferrer" className="underline">{recommendationForm.source}</a>
+                          </div>
+                        )}
                       </AlertDescription>
                     </Alert>
                   )}

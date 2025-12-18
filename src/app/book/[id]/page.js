@@ -5,10 +5,9 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, Book, ExternalLink, User } from 'lucide-react';
+import Header from '@/components/ui/header';
 
 export default function BookDetail() {
   const params = useParams();
@@ -62,18 +61,14 @@ export default function BookDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-6">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="h-4 w-4" />
-            Kembali ke Beranda
-          </Link>
-        </div>
-      </header>
+      <Header/>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        <Link href="/book" className="inline-flex mb-5 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" />
+            Kembali
+        </Link>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Book Cover and Info */}
           <div className="lg:col-span-1">
@@ -95,9 +90,6 @@ export default function BookDetail() {
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <Badge variant={book.version === 'imported' ? 'default' : 'secondary'} className="mb-2">
-                      {book.version === 'imported' ? 'English (Imported)' : 'Indonesian (Terjemahan)'}
-                    </Badge>
                     <h1 className="text-2xl font-bold mb-2">{book.title}</h1>
                     <p className="text-muted-foreground">oleh {book.author}</p>
                   </div>
@@ -115,9 +107,7 @@ export default function BookDetail() {
             </Card>
           </div>
 
-          {/* Book Description and Recommendations */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Description */}
             <Card>
               <CardHeader>
                 <CardTitle>Tentang Buku</CardTitle>
