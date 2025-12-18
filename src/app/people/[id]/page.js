@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowLeft, Book, User } from 'lucide-react';
+import { ArrowLeft, Book, User, Twitter, Instagram, Globe } from 'lucide-react';
 
 export default function PersonDetail() {
   const params = useParams();
@@ -85,9 +85,43 @@ export default function PersonDetail() {
               </Avatar>
               <div className="flex-1">
                 <h1 className="text-3xl font-bold mb-2">Buku Rekomendasi {people.name}</h1>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed mb-4">
                   {people.bio || 'Tidak ada bio tersedia.'}
                 </p>
+
+                {/* Social Media Icons */}
+                <div className="flex gap-4">
+                  {people.social_twitter && (
+                    <a
+                      href={people.social_twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Twitter className="h-5 w-5" />
+                    </a>
+                  )}
+                  {people.social_instagram && (
+                    <a
+                      href={people.social_instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Instagram className="h-5 w-5" />
+                    </a>
+                  )}
+                  {people.social_website && (
+                    <a
+                      href={people.social_website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Globe className="h-5 w-5" />
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>

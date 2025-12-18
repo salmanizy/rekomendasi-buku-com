@@ -38,7 +38,10 @@ export default function AdminPanel() {
   const [peopleForm, setPeopleForm] = useState({
     name: '',
     bio: '',
-    avatarUrl: ''
+    avatarUrl: '',
+    socialTwitter: '',
+    socialInstagram: '',
+    socialWebsite: ''
   });
   const [peopleError, setPeopleError] = useState('');
   const [peopleSuccess, setPeopleSuccess] = useState('');
@@ -188,7 +191,10 @@ export default function AdminPanel() {
         setPeopleForm({
           name: '',
           bio: '',
-          avatarUrl: ''
+          avatarUrl: '',
+          socialTwitter: '',
+          socialInstagram: '',
+          socialWebsite: ''
         });
         fetchData();
         setTimeout(() => setPeopleSuccess(''), 3000);
@@ -567,6 +573,39 @@ export default function AdminPanel() {
                     onChange={(e) => setPeopleForm({ ...peopleForm, avatarUrl: e.target.value })}
                     disabled={peopleLoading}
                   />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="socialTwitter">Twitter URL</Label>
+                    <Input
+                      id="socialTwitter"
+                      placeholder="https://twitter.com/..."
+                      value={peopleForm.socialTwitter}
+                      onChange={(e) => setPeopleForm({ ...peopleForm, socialTwitter: e.target.value })}
+                      disabled={peopleLoading}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="socialInstagram">Instagram URL</Label>
+                    <Input
+                      id="socialInstagram"
+                      placeholder="https://instagram.com/..."
+                      value={peopleForm.socialInstagram}
+                      onChange={(e) => setPeopleForm({ ...peopleForm, socialInstagram: e.target.value })}
+                      disabled={peopleLoading}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="socialWebsite">Website URL</Label>
+                    <Input
+                      id="socialWebsite"
+                      placeholder="https://example.com"
+                      value={peopleForm.socialWebsite}
+                      onChange={(e) => setPeopleForm({ ...peopleForm, socialWebsite: e.target.value })}
+                      disabled={peopleLoading}
+                    />
+                  </div>
                 </div>
 
                 <Button type="submit" disabled={peopleLoading}>

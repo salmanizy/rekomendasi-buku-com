@@ -238,7 +238,7 @@ export async function POST(request) {
     
     // Admin - Add person
     if (pathname === '/api/admin/people') {
-      const { name, bio, avatarUrl } = body;
+      const { name, bio, avatarUrl, socialTwitter, socialInstagram, socialWebsite } = body;
       
       if (!name) {
         return NextResponse.json(
@@ -252,16 +252,19 @@ export async function POST(request) {
         .insert([{
           name,
           bio: bio || null,
-          avatar_url: avatarUrl || null
+          avatar_url: avatarUrl || null,
+          social_twitter: socialTwitter || null,
+          social_instagram: socialInstagram || null,
+          social_website: socialWebsite || null
         }])
         .select()
         .single();
       
       if (error) throw error;
       
-      return NextResponse.json({ 
+      return NextResponse.json({
         message: 'Orang berhasil ditambahkan!',
-        person: data 
+        person: data
       });
     }
     
