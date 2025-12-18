@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ArrowLeft, Book, User, ExternalLink, Quote } from 'lucide-react';
 import Header from '@/components/ui/header';
 
-export default function PersonDetail() {
+export default function PeopleDetail() {
   const params = useParams();
   const [person, setPerson] = useState(null);
   const [books, setBooks] = useState([]);
@@ -17,11 +17,11 @@ export default function PersonDetail() {
 
   useEffect(() => {
     if (params?.id) {
-      fetchPersonDetail();
+      fetchPeopleDetail();
     }
   }, [params?.id]);
 
-  const fetchPersonDetail = async () => {
+  const fetchPeopleDetail = async () => {
     try {
       const response = await fetch(`/api/people/${params.id}`);
       const data = await response.json();
@@ -193,7 +193,7 @@ export default function PersonDetail() {
       {/* Footer */}
       <footer className="border-t mt-20">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
-          <p>© 2024 diabros - Rekomendasi Buku Terpercaya</p>
+          <p>© 2024 Rekobu - Rekomendasi Buku Terpercaya</p>
         </div>
       </footer>
     </div>

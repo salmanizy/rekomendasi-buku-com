@@ -132,21 +132,21 @@ export default function BookDetail() {
               <CardContent>
                 {people.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {people.map((person) => (
-                      <Link href={`/person/${person.id}`} key={person.id}>
+                    {people.map((people) => (
+                      <Link href={`/people/${people.id}`} key={people.id}>
                         <Card className="hover:shadow-md transition-shadow cursor-pointer">
                           <CardContent className="p-4">
                             <div className="flex items-center gap-3">
                               <Avatar>
-                                <AvatarImage src={person.avatar_url} alt={person.name} />
+                                <AvatarImage src={people.avatar_url} alt={people.name} />
                                 <AvatarFallback>
-                                  {person.name?.charAt(0)?.toUpperCase() || 'U'}
+                                  {people.name?.charAt(0)?.toUpperCase() || 'U'}
                                 </AvatarFallback>
                               </Avatar>
                               <div className="flex-1 min-w-0">
-                                <p className="font-semibold truncate">{person.name}</p>
+                                <p className="font-semibold truncate">{people.name}</p>
                                 <p className="text-sm text-muted-foreground line-clamp-1">
-                                  {person.bio || 'Tidak ada bio'}
+                                  {people.bio || 'Tidak ada bio'}
                                 </p>
                               </div>
                             </div>
@@ -166,6 +166,11 @@ export default function BookDetail() {
           </div>
         </div>
       </main>
+      <footer className="border-t mt-20">
+        <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
+          <p>© 2025 Rekobu - Rekomendasi Buku Terpercaya</p>
+        </div>
+      </footer>
     </div>
   );
 }

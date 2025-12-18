@@ -1,3 +1,4 @@
+// src/components/ui/AllInSearchBar.jsx
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -117,16 +118,17 @@ export default function AllInSearchBar() {
             ) : results.length > 0 ? (
               <div className="py-2">
 
-                {results.filter(r => r.type === 'person').length > 0 && (
+                {/* FIXED: Changed from 'person' to 'people' */}
+                {results.filter(r => r.type === 'people').length > 0 && (
                   <div>
                     <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider bg-gray-50">
                       Rekomender
                     </div>
                     {results
-                      .filter(r => r.type === 'person')
+                      .filter(r => r.type === 'people')
                       .map((result) => (
                         <button
-                          key={`person-${result.id}`}
+                          key={`people-${result.id}`}
                           onClick={() => handleResultClick(result.url)}
                           className="w-full px-4 py-3 hover:bg-gray-50 transition-colors flex items-center gap-4 group"
                         >

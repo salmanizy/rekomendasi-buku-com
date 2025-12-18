@@ -40,8 +40,8 @@ export default function Home() {
 
     if (debouncedSearchTerm) {
       filtered = filtered.filter(
-        (person) =>
-          person.name?.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+        (people) =>
+          people.name?.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
       );
     }
 
@@ -154,29 +154,29 @@ export default function Home() {
               </div>
             ) : (
               <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                {filteredPeople.map((person) => (
-                  <Link href={`/person/${person.uuid || person.id}`} key={person.uuid || person.id}>
+                {filteredPeople.map((people) => (
+                  <Link href={`/people/${people.uuid || people.id}`} key={people.uuid || people.id}>
                     <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
                       <CardHeader className="text-center p-3 sm:p-4 md:p-6">
                         {/* Avatar */}
                         <div className="flex justify-center mb-3 sm:mb-4">
                           <Avatar className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24">
-                            <AvatarImage src={person.avatar_url} alt={person.name} />
+                            <AvatarImage src={people.avatar_url} alt={people.name} />
                             <AvatarFallback className="text-xs sm:text-sm md:text-lg lg:text-2xl">
-                              {getInitials(person.name)}
+                              {getInitials(people.name)}
                             </AvatarFallback>
                           </Avatar>
                         </div>
 
                         {/* Nama */}
                         <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl line-clamp-2">
-                          {person.name}
+                          {people.name}
                         </CardTitle>
 
                         {/* Bio */}
-                        {person.bio && (
+                        {people.bio && (
                           <CardDescription className="line-clamp-3 mt-1 sm:mt-2 text-[10px] sm:text-xs md:text-sm text-muted-foreground">
-                            {person.bio}
+                            {people.bio}
                           </CardDescription>
                         )}
                       </CardHeader>
@@ -192,7 +192,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t mt-20">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
-          <p>© 2025 diabros - Rekomendasi Buku Terpercaya</p>
+          <p>© 2025 Rekobu - Rekomendasi Buku Terpercaya</p>
         </div>
       </footer>
     </div>

@@ -32,21 +32,21 @@ export default function AdminPanel() {
   const [bookSuccess, setBookSuccess] = useState('');
   const [bookLoading, setBookLoading] = useState(false);
 
-  // Person form state
-  const [personForm, setPersonForm] = useState({
+  // people form state
+  const [peopleForm, setpeopleForm] = useState({
     name: '',
     bio: '',
     avatarUrl: ''
   });
-  const [personError, setPersonError] = useState('');
-  const [personSuccess, setPersonSuccess] = useState('');
-  const [personLoading, setPersonLoading] = useState(false);
+  const [peopleError, setpeopleError] = useState('');
+  const [peopleSuccess, setpeopleSuccess] = useState('');
+  const [peopleLoading, setpeopleLoading] = useState(false);
 
   // Recommendation form state
   const [recommendationForm, setRecommendationForm] = useState({
-    personId: '',
+    peopleId: '',
     bookId: '',
-    personName: '',
+    peopleName: '',
     bookTitle: '',
     quote: '',
     source: ''
@@ -56,11 +56,11 @@ export default function AdminPanel() {
   const [recommendationLoading, setRecommendationLoading] = useState(false);
 
   // Search states
-  const [personSearch, setPersonSearch] = useState('');
+  const [peopleSearch, setpeopleSearch] = useState('');
   const [bookSearch, setBookSearch] = useState('');
-  const [showPersonDropdown, setShowPersonDropdown] = useState(false);
+  const [showpeopleDropdown, setShowpeopleDropdown] = useState(false);
   const [showBookDropdown, setShowBookDropdown] = useState(false);
-  const personRef = useRef(null);
+  const peopleRef = useRef(null);
   const bookRef = useRef(null);
 
   // Check authentication
@@ -85,8 +85,8 @@ export default function AdminPanel() {
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (personRef.current && !personRef.current.contains(event.target)) {
-        setShowPersonDropdown(false);
+      if (peopleRef.current && !peopleRef.current.contains(event.target)) {
+        setShowpeopleDropdown(false);
       }
       if (bookRef.current && !bookRef.current.contains(event.target)) {
         setShowBookDropdown(false);
@@ -169,44 +169,44 @@ export default function AdminPanel() {
     }
   };
 
-  const handlePersonSubmit = async (e) => {
+  const handlepeopleSubmit = async (e) => {
     e.preventDefault();
-    setPersonError('');
-    setPersonSuccess('');
+    setpeopleError('');
+    setpeopleSuccess('');
 
-    if (!personForm.name) {
-      setPersonError('Nama harus diisi!');
+    if (!peopleForm.name) {
+      setpeopleError('Nama harus diisi!');
       return;
     }
 
-    setPersonLoading(true);
+    setpeopleLoading(true);
 
     try {
       const response = await fetch('/api/admin/people', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(personForm)
+        body: JSON.stringify(peopleForm)
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setPersonSuccess('Orang berhasil ditambahkan!');
-        setPersonForm({
+        setpeopleSuccess('Orang berhasil ditambahkan!');
+        setpeopleForm({
           name: '',
           bio: '',
           avatarUrl: ''
         });
         fetchData();
-        setTimeout(() => setPersonSuccess(''), 3000);
+        setTimeout(() => setpeopleSuccess(''), 3000);
       } else {
-        setPersonError(data.error || 'Gagal menambahkan orang!');
+        setpeopleError(data.error || 'Gagal menambahkan orang!');
       }
     } catch (error) {
       console.error('Error:', error);
-      setPersonError('Terjadi kesalahan. Silakan coba lagi.');
+      setpeopleError('Terjadi kesalahan. Silakan coba lagi.');
     } finally {
-      setPersonLoading(false);
+      setpeopleLoading(false);
     }
   };
 
@@ -215,8 +215,8 @@ export default function AdminPanel() {
     setRecommendationError('');
     setRecommendationSuccess('');
 
-    if (!recommendationForm.personId || !recommendationForm.bookId) {
-      setRecommendationError('Person dan Buku harus dipilih!');
+    if (!recommendationForm.peopleId || !recommendationForm.bookId) {
+      setRecommendationError('people dan Buku harus dipilih!');
       return;
     }
 
@@ -224,7 +224,7 @@ export default function AdminPanel() {
 
     try {
       const payload = {
-        person_id: recommendationForm.personId,
+        people_id: recommendationForm.peopleId,
         book_id: recommendationForm.bookId,
       };
 
@@ -248,14 +248,14 @@ export default function AdminPanel() {
       if (response.ok) {
         setRecommendationSuccess('Rekomendasi berhasil ditambahkan!');
         setRecommendationForm({
-          personId: '',
+          peopleId: '',
           bookId: '',
-          personName: '',
+          peopleName: '',
           bookTitle: '',
           quote: '',
           source: ''
         });
-        setPersonSearch('');
+        setpeopleSearch('');
         setBookSearch('');
         fetchData();
         setTimeout(() => setRecommendationSuccess(''), 3000);
@@ -271,8 +271,8 @@ export default function AdminPanel() {
   };
 
   // Filter people based on search
-  const filteredPeople = people.filter(person =>
-    person.name && person.name.toLowerCase().includes(personSearch.toLowerCase())
+  const filteredPeople = people.filter(people =>
+    people.name && people.name.toLowerCase().includes(peopleSearch.toLowerCase())
   );
 
   // Filter books based on search
@@ -281,15 +281,15 @@ export default function AdminPanel() {
     (book.author && book.author.toLowerCase().includes(bookSearch.toLowerCase()))
   );
 
-  // Handle person selection
-  const handlePersonSelect = (person) => {
+  // Handle people selection
+  const handlepeopleSelect = (people) => {
     setRecommendationForm({
       ...recommendationForm,
-      personId: person.uuid || person.id,
-      personName: person.name
+      peopleId: people.uuid || people.id,
+      peopleName: people.name
     });
-    setPersonSearch(person.name);
-    setShowPersonDropdown(false);
+    setpeopleSearch(people.name);
+    setShowpeopleDropdown(false);
   };
 
   // Handle book selection
@@ -303,14 +303,14 @@ export default function AdminPanel() {
     setShowBookDropdown(false);
   };
 
-  // Clear person selection
-  const clearPersonSelection = () => {
+  // Clear people selection
+  const clearpeopleSelection = () => {
     setRecommendationForm({
       ...recommendationForm,
-      personId: '',
-      personName: ''
+      peopleId: '',
+      peopleName: ''
     });
-    setPersonSearch('');
+    setpeopleSearch('');
   };
 
   // Clear book selection
@@ -511,7 +511,7 @@ export default function AdminPanel() {
             </Card>
           </TabsContent>
 
-          {/* Add Person Form */}
+          {/* Add people Form */}
           <TabsContent value="people">
             <Card>
               <CardHeader>
@@ -521,17 +521,17 @@ export default function AdminPanel() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handlePersonSubmit} className="space-y-4">
-                  {personError && (
+                <form onSubmit={handlepeopleSubmit} className="space-y-4">
+                  {peopleError && (
                     <Alert variant="destructive">
                       <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>{personError}</AlertDescription>
+                      <AlertDescription>{peopleError}</AlertDescription>
                     </Alert>
                   )}
-                  {personSuccess && (
+                  {peopleSuccess && (
                     <Alert className="border-green-500 text-green-600">
                       <CheckCircle2 className="h-4 w-4" />
-                      <AlertDescription>{personSuccess}</AlertDescription>
+                      <AlertDescription>{peopleSuccess}</AlertDescription>
                     </Alert>
                   )}
 
@@ -540,9 +540,9 @@ export default function AdminPanel() {
                     <Input
                       id="name"
                       placeholder="Contoh: Elon Musk"
-                      value={personForm.name}
-                      onChange={(e) => setPersonForm({ ...personForm, name: e.target.value })}
-                      disabled={personLoading}
+                      value={peopleForm.name}
+                      onChange={(e) => setpeopleForm({ ...peopleForm, name: e.target.value })}
+                      disabled={peopleLoading}
                       required
                     />
                   </div>
@@ -552,9 +552,9 @@ export default function AdminPanel() {
                     <Textarea
                       id="bio"
                       placeholder="Deskripsi singkat tentang orang ini..."
-                      value={personForm.bio}
-                      onChange={(e) => setPersonForm({ ...personForm, bio: e.target.value })}
-                      disabled={personLoading}
+                      value={peopleForm.bio}
+                      onChange={(e) => setpeopleForm({ ...peopleForm, bio: e.target.value })}
+                      disabled={peopleLoading}
                       rows={4}
                     />
                   </div>
@@ -564,14 +564,14 @@ export default function AdminPanel() {
                     <Input
                       id="avatarUrl"
                       placeholder="https://example.com/avatar.jpg"
-                      value={personForm.avatarUrl}
-                      onChange={(e) => setPersonForm({ ...personForm, avatarUrl: e.target.value })}
-                      disabled={personLoading}
+                      value={peopleForm.avatarUrl}
+                      onChange={(e) => setpeopleForm({ ...peopleForm, avatarUrl: e.target.value })}
+                      disabled={peopleLoading}
                     />
                   </div>
 
-                  <Button type="submit" disabled={personLoading}>
-                    {personLoading ? (
+                  <Button type="submit" disabled={peopleLoading}>
+                    {peopleLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Menambahkan...
@@ -610,27 +610,27 @@ export default function AdminPanel() {
                   )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Person Search */}
-                    <div className="space-y-2 relative" ref={personRef}>
-                      <Label htmlFor="personSearch">Cari Orang *</Label>
+                    {/* people Search */}
+                    <div className="space-y-2 relative" ref={peopleRef}>
+                      <Label htmlFor="peopleSearch">Cari Orang *</Label>
                       <div className="relative">
                         <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <Input
-                          id="personSearch"
+                          id="peopleSearch"
                           placeholder="Ketik nama orang..."
-                          value={personSearch}
+                          value={peopleSearch}
                           onChange={(e) => {
-                            setPersonSearch(e.target.value);
-                            setShowPersonDropdown(true);
+                            setpeopleSearch(e.target.value);
+                            setShowpeopleDropdown(true);
                           }}
-                          onFocus={() => setShowPersonDropdown(true)}
+                          onFocus={() => setShowpeopleDropdown(true)}
                           disabled={recommendationLoading}
                           className="pl-9 pr-9"
                         />
-                        {recommendationForm.personId && (
+                        {recommendationForm.peopleId && (
                           <button
                             type="button"
-                            onClick={clearPersonSelection}
+                            onClick={clearpeopleSelection}
                             className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
                           >
                             <X className="h-4 w-4" />
@@ -639,19 +639,19 @@ export default function AdminPanel() {
                       </div>
                       
                       {/* Dropdown Results */}
-                      {showPersonDropdown && personSearch && (
+                      {showpeopleDropdown && peopleSearch && (
                         <div className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
                           {filteredPeople.length > 0 ? (
-                            filteredPeople.map((person) => (
+                            filteredPeople.map((people) => (
                               <button
-                                key={person.uuid || person.id}
+                                key={people.uuid || people.id}
                                 type="button"
-                                onClick={() => handlePersonSelect(person)}
+                                onClick={() => handlepeopleSelect(people)}
                                 className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
                               >
-                                <div className="font-medium">{person.name}</div>
-                                {person.bio && (
-                                  <div className="text-sm text-muted-foreground truncate">{person.bio}</div>
+                                <div className="font-medium">{people.name}</div>
+                                {people.bio && (
+                                  <div className="text-sm text-muted-foreground truncate">{people.bio}</div>
                                 )}
                               </button>
                             ))
@@ -664,8 +664,8 @@ export default function AdminPanel() {
                       )}
                       
                       <p className="text-xs text-muted-foreground">
-                        {recommendationForm.personId ? (
-                          <span className="text-green-600 font-medium">✓ Terpilih: {recommendationForm.personName}</span>
+                        {recommendationForm.peopleId ? (
+                          <span className="text-green-600 font-medium">✓ Terpilih: {recommendationForm.peopleName}</span>
                         ) : (
                           `${people.length} orang tersedia`
                         )}
@@ -766,11 +766,11 @@ export default function AdminPanel() {
                   </div>
 
                   {/* Preview */}
-                  {recommendationForm.personId && recommendationForm.bookId && (
+                  {recommendationForm.peopleId && recommendationForm.bookId && (
                     <Alert className="border-blue-500 bg-blue-50">
                       <Link2 className="h-4 w-4 text-blue-600" />
                       <AlertDescription className="text-blue-900">
-                        <strong>Preview:</strong> {recommendationForm.personName} merekomendasikan &quot;{recommendationForm.bookTitle}&quot;
+                        <strong>Preview:</strong> {recommendationForm.peopleName} merekomendasikan &quot;{recommendationForm.bookTitle}&quot;
                         {recommendationForm.quote && (
                           <div className="mt-2 italic text-sm">
                             &quot;{recommendationForm.quote}&quot;
@@ -787,7 +787,7 @@ export default function AdminPanel() {
 
                   <Button 
                     type="submit" 
-                    disabled={recommendationLoading || !recommendationForm.personId || !recommendationForm.bookId}
+                    disabled={recommendationLoading || !recommendationForm.peopleId || !recommendationForm.bookId}
                   >
                     {recommendationLoading ? (
                       <>
@@ -804,6 +804,11 @@ export default function AdminPanel() {
           </TabsContent>
         </Tabs>
       </main>
+      <footer className="border-t mt-20">
+        <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
+          <p>© 2025 Rekobu - Rekomendasi Buku Terpercaya</p>
+        </div>
+      </footer>
     </div>
   );
 }

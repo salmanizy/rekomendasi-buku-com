@@ -14,12 +14,12 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { person_id, book_id, quote, source } = body;
+    const { people_id, book_id, quote, source } = body;
 
     // Validasi input
-    if (!person_id || !book_id) {
+    if (!people_id || !book_id) {
       return NextResponse.json(
-        { error: 'Person ID dan Book ID harus diisi!' },
+        { error: 'people ID dan Book ID harus diisi!' },
         { status: 400 }
       );
     }
@@ -28,7 +28,7 @@ export async function POST(request) {
     const { data: existing, error: checkError } = await supabase
       .from('recommendations')
       .select('id')
-      .eq('person_id', person_id)
+      .eq('people_id', people_id)
       .eq('book_id', book_id)
       .maybeSingle();
 
@@ -46,7 +46,7 @@ export async function POST(request) {
 
     // Prepare insert data
     const insertData = {
-      person_id,
+      people_id,
       book_id,
       quote: quote || null,
       source: source || null
@@ -85,7 +85,7 @@ export async function GET() {
       .from('recommendations')
       .select(`
         *,
-        people:person_id(uuid, name),
+        people:people_id(uuid, name),
         books:book_id(uuid, title, author)
       `)
       .order('created_at', { ascending: false });

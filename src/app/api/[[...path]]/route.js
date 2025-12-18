@@ -1,3 +1,4 @@
+//api/[[...path]]/route.js
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
@@ -33,10 +34,10 @@ export async function GET(request) {
       const { data: recommendations, error: recError } = await supabase
         .from('recommendations')
         .select(`
-          person_id,
+          people_id,
           quote,
           source,
-          people (
+          people:people_id (
             id,
             name,
             bio,
@@ -93,12 +94,12 @@ export async function GET(request) {
           url: `/book/${book.id}`
         })),
         ...(people || []).map(person => ({
-          type: 'person',
+          type: 'people',
           id: person.id,
           title: person.name,
           subtitle: person.bio,
           image: person.avatar_url,
-          url: `/person/${person.id}`
+          url: `/people/${person.id}`
         }))
       ];
       
@@ -116,43 +117,68 @@ export async function GET(request) {
       return NextResponse.json({ people: data || [] });
     }
     
-    // Get single person with their recommendations
+    // Get single person with their recommendations - FIXED WITH CORRECT QUERY
     if (pathname.startsWith('/api/people/')) {
-      const personId = pathname.split('/').pop();
+      const peopleId = pathname.split('/').pop();
       
+      console.log('=== Fetching Person Detail ===');
+      console.log('People ID:', peopleId);
+      
+      // Fetch person details
       const { data: person, error: personError } = await supabase
         .from('people')
         .select('*')
-        .eq('id', personId)
+        .eq('id', peopleId)
         .single();
       
-      if (personError) throw personError;
+      if (personError) {
+        console.error('Person fetch error:', personError);
+        throw personError;
+      }
       
-      // Get books recommended by this person
+      console.log('Person found:', person);
+      
+      // FIXED: Get books recommended by this person with correct Supabase syntax
       const { data: recommendations, error: recError } = await supabase
         .from('recommendations')
         .select(`
           book_id,
           quote,
           source,
-          books (
+          books:book_id (
             id,
             title,
             author,
             cover_image_url,
-            version,
-            tokopedia_url
+            tokopedia_url,
+            description,
+            openlibrary_id
           )
         `)
-        .eq('person_id', personId);
+        .eq('people_id', peopleId);
       
-      if (recError) throw recError;
+      if (recError) {
+        console.error('Recommendations fetch error:', recError);
+        // Don't throw, just log and continue with empty array
+      }
       
+      console.log('Recommendations raw:', recommendations);
+      
+      // Map the results correctly
       const books = recommendations?.map(r => ({
-        ...r.books,
+        id: r.books?.id,
+        title: r.books?.title,
+        author: r.books?.author,
+        cover_image_url: r.books?.cover_image_url,
+        tokopedia_url: r.books?.tokopedia_url,
+        description: r.books?.description,
+        openlibrary_id: r.books?.openlibrary_id,
         quote: r.quote,
         source: r.source
-      })) || [];
+      })).filter(book => book.id) || []; // Filter out null/undefined books
+      
+      console.log('Books mapped:', books);
+      console.log('Total books:', books.length);
       
       return NextResponse.json({ person, books });
     }
@@ -280,7 +306,6 @@ export async function POST(request) {
           author,
           description: description || null,
           cover_image_url: coverImageUrl || null,
-          version: version || 'imported',
           tokopedia_url: tokopediaUrl || null,
           openlibrary_id: openlibraryId || null
         }])
@@ -295,7 +320,7 @@ export async function POST(request) {
       });
     }
     
-    // Admin - Add person
+    // Admin - Add people
     if (pathname === '/api/admin/people') {
       const { name, bio, avatarUrl } = body;
       
@@ -320,17 +345,17 @@ export async function POST(request) {
       
       return NextResponse.json({ 
         message: 'Orang berhasil ditambahkan!',
-        person: data 
+        people: data 
       });
     }
     
     // Admin - Add recommendation
     if (pathname === '/api/admin/recommendations') {
-      const { person_id, book_id, quote, source } = body;
+      const { people_id, book_id, quote, source } = body;
       
-      if (!person_id || !book_id) {
+      if (!people_id || !book_id) {
         return NextResponse.json(
-          { error: 'Person ID dan Book ID harus diisi!' },
+          { error: 'people ID dan Book ID harus diisi!' },
           { status: 400 }
         );
       }
@@ -339,7 +364,7 @@ export async function POST(request) {
       const { data: existingRec } = await supabase
         .from('recommendations')
         .select('id')
-        .eq('person_id', person_id)
+        .eq('people_id', people_id)
         .eq('book_id', book_id)
         .limit(1);
       
@@ -353,7 +378,7 @@ export async function POST(request) {
       const { data, error } = await supabase
         .from('recommendations')
         .insert([{
-          person_id,
+          people_id,
           book_id,
           quote: quote || null,
           source: source || null

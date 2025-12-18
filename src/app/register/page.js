@@ -117,7 +117,7 @@ export default function Register() {
           <CardHeader>
             <CardTitle>Daftar Akun Baru</CardTitle>
             <CardDescription>
-              Buat akun untuk mendapatkan rekomendasi buku personal
+              Buat akun untuk mendapatkan rekomendasi buku peopleal
             </CardDescription>
           </CardHeader>
           <CardContent>
