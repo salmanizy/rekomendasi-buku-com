@@ -160,7 +160,7 @@ export default async function PeopleDetail({ params }) {
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1">
-                                    <h1 className="text-3xl font-bold mb-2">{person.name}</h1>
+                                    <h1 className="text-3xl font-bold mb-2">Buku Rekomendasi {person.name}</h1>
                                     <p className="text-muted-foreground leading-relaxed">
                                         {person.bio || 'Tidak ada bio tersedia.'}
                                     </p>
