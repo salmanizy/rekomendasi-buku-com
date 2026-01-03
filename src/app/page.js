@@ -155,7 +155,7 @@ export default function Home() {
             ) : (
               <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                 {filteredPeople.map((people) => (
-                  <Link href={`/people/${people.uuid || people.id}`} key={people.uuid || people.id}>
+                  <Link href={`/people/recommended-books/${people.slug}`} key={people.slug || people.id}>
                     <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
                       <CardHeader className="text-center p-3 sm:p-4 md:p-6">
                         {/* Avatar */}
