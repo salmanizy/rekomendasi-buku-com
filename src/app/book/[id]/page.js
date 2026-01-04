@@ -61,12 +61,12 @@ export default function BookDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header/>
+      <Header />
 
       <main className="container mx-auto px-4 py-8">
         <Link href="/book" className="inline-flex mb-5 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
-            Kembali
+          Kembali
         </Link>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -90,10 +90,10 @@ export default function BookDetail() {
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <h1 className="text-2xl font-bold mb-2">{book.title}</h1>
+                    <h1 className="font-display text-2xl font-bold mb-2">{book.title}</h1>
                     <p className="text-muted-foreground">oleh {book.author}</p>
                   </div>
-                  
+
                   {book.tokopedia_url && (
                     <Button className="w-full" asChild>
                       <a href={book.tokopedia_url} target="_blank" rel="noopener noreferrer">
@@ -133,7 +133,7 @@ export default function BookDetail() {
                 {people.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4">
                     {people.map((people) => (
-                      <Link href={`/people/${people.id}`} key={people.id}>
+                      <Link href={`/people/recommended-books/${people.slug}`} key={people.id}>
                         <Card className="hover:shadow-md transition-shadow cursor-pointer">
                           <CardContent className="p-4">
                             <div className="flex items-center gap-3">
