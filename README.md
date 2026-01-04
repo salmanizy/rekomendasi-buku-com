@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Rekobu - Rekomendasi Buku Indonesia
+
+A curated book recommendation platform that lets you discover books recommended by influential people, entrepreneurs, writers, creators, and public figures.
+
+## Features
+
+- **Book Discovery** - Browse and search through a curated collection of book recommendations
+- **Recommender Profiles** - Explore books recommended by specific people (entrepreneurs, authors, creators, politicians)
+- **Smart Search** - Search across books, authors, and recommenders from a unified search bar
+- **Recommendation Showcase** - Dynamic carousel highlighting featured book recommendations on the homepage
+- **Book Details** - View detailed information about each book including who recommends it
+- **Admin Panel** - Manage books, people, and recommendations through an authenticated admin interface
+- **SEO Optimized** - Dynamic metadata, structured data (JSON-LD), and sitemap generation
+
+## Tech Stack
+
+- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
+- **Database**: [Supabase](https://supabase.com/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [Radix UI](https://www.radix-ui.com/) + [shadcn/ui](https://ui.shadcn.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm, yarn, pnpm, or bun
+- Supabase account with database configured
+
+### Environment Setup
+
+Create a `.env.local` file in the root directory:
 
 ```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### Build for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── admin/              # Admin panel
+│   ├── api/                # API routes
+│   ├── book/               # Book pages
+│   ├── login/              # Authentication
+│   ├── people/             # Recommender profiles
+│   └── page.js             # Homepage
+├── components/ui/          # Reusable UI components
+├── hooks/                  # Custom React hooks
+└── lib/                    # Utility functions & Supabase client
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Database Schema
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+The app uses a relational structure in Supabase:
 
-## Deploy on Vercel
+- **books** - Book information (title, author, cover, description)
+- **people** - Recommenders (name, bio, avatar)
+- **recommendations** - Links books to people with quotes and sources
+- **users** - Authentication for admin access
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Deploy easily on [Vercel](https://vercel.com):
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
+
+## License
+
+MIT
