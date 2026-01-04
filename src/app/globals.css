@@ -2,9 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Ivar Display Font Family */
+@font-face {
+  font-family: 'Ivar Display';
+  src: url('/fonts/IvarDisplay-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Ivar Display';
+  src: url('/fonts/IvarDisplay-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Ivar Display';
+  src: url('/fonts/IvarDisplay-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Ivar Display';
+  src: url('/fonts/IvarDisplay-MediumItalic.otf') format('opentype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Ivar Display';
+  src: url('/fonts/IvarDisplay-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Ivar Display';
+  src: url('/fonts/IvarDisplay-SemiBoldItalic.otf') format('opentype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Ivar Display';
+  src: url('/fonts/IvarDisplay-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Ivar Display';
+  src: url('/fonts/IvarDisplay-BoldItalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Scto Grotesk A Font Family */
+@font-face {
+  font-family: 'Scto Grotesk A';
+  src: url('/fonts/Scto Grotesk A.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 252 14% 98%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -53,7 +127,45 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Sliding Text Animation for Hero */
+@keyframes slide-text {
+
+  0%,
+  16% {
+    transform: translateY(0);
+  }
+
+  20%,
+  36% {
+    transform: translateY(-20%);
+  }
+
+  40%,
+  56% {
+    transform: translateY(-40%);
+  }
+
+  60%,
+  76% {
+    transform: translateY(-60%);
+  }
+
+  80%,
+  96% {
+    transform: translateY(-80%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.sliding-text {
+  animation: slide-text 10s ease-in-out infinite;
 }

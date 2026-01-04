@@ -11,9 +11,13 @@ module.exports = {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: {
+        DEFAULT: "1rem",
+        sm: "1.5rem",
+        lg: "2rem",
+      },
       screens: {
-        "2xl": "1400px",
+        "2xl": "1440px",
       },
     },
     extend: {
@@ -56,6 +60,10 @@ module.exports = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      fontFamily: {
+        display: ['"Ivar Display"', 'Georgia', 'serif'],
+        sans: ['"Scto Grotesk A"', 'system-ui', 'sans-serif'],
       },
       keyframes: {
         "accordion-down": {
