@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Book, ExternalLink, Twitter, Instagram, Linkedin, Globe } from 'lucide-react';
+import { ArrowLeft, Book, Twitter, Instagram, Linkedin, Globe } from 'lucide-react';
 import Header from '@/components/ui/header';
 import { supabase } from '@/lib/supabase';
+import BookCard from '@/components/ui/BookCard';
 
 // Fetch person data by slug
 async function getPersonBySlug(slug) {
@@ -36,17 +36,44 @@ async function getPersonBySlug(slug) {
     `)
         .eq('people_id', person.id);
 
-    const books = recommendations?.map(r => ({
-        id: r.books?.id,
-        title: r.books?.title,
-        author: r.books?.author,
-        cover_image_url: r.books?.cover_image_url,
-        tokopedia_url: r.books?.tokopedia_url,
-        description: r.books?.description,
-        openlibrary_id: r.books?.openlibrary_id,
-        quote: r.quote,
-        source: r.source
-    })).filter(book => book.id) || [];
+    // Get all recommenders for each book
+    const booksWithRecommenders = await Promise.all(
+        recommendations?.map(async (r) => {
+            if (!r.books?.id) return null;
+
+            // Get all people who recommended this book
+            const { data: allRecommendations } = await supabase
+                .from('recommendations')
+                .select(`
+                    people:people_id (
+                        id,
+                        name,
+                        slug,
+                        avatar_url
+                    )
+                `)
+                .eq('book_id', r.books.id);
+
+            const recommenders = allRecommendations
+                ?.map(rec => rec.people)
+                .filter(Boolean) || [];
+
+            return {
+                id: r.books.id,
+                title: r.books.title,
+                author: r.books.author,
+                cover_image_url: r.books.cover_image_url,
+                tokopedia_url: r.books.tokopedia_url,
+                description: r.books.description,
+                openlibrary_id: r.books.openlibrary_id,
+                quote: r.quote,
+                source: r.source,
+                recommenders: recommenders
+            };
+        }) || []
+    );
+
+    const books = booksWithRecommenders.filter(Boolean);
 
     return { person, books };
 }
@@ -155,8 +182,8 @@ export default async function PeopleDetail({ params }) {
                         </div>
 
                         <div className="bg-card overflow-hidden">
-                            {/* Avatar - Full Width and Height */}
-                            <div className="relative w-full h-[500px] bg-muted">
+                            {/* Avatar - Square (aspect-square) */}
+                            <div className="relative w-full aspect-square bg-muted">
                                 {person.avatar_url ? (
                                     <img
                                         src={person.avatar_url}
@@ -175,13 +202,13 @@ export default async function PeopleDetail({ params }) {
                             {/* Card Content */}
                             <div className="p-6 text-center">
                                 {/* Name - Italic */}
-                                <h1 className="font-display text-2xl font-bold text-foreground mb-2 italic">
+                                <h1 className="font-display text-4xl font-bold text-foreground mb-2 italic">
                                     {person.name}
                                 </h1>
 
                                 {/* Bio */}
                                 {person.bio && (
-                                    <p className="text-sm text-muted-foreground leading-relaxed mb-6 px-2">
+                                    <p className="text-md text-muted-foreground leading-relaxed mb-6 px-2">
                                         {person.bio}
                                     </p>
                                 )}
@@ -239,10 +266,10 @@ export default async function PeopleDetail({ params }) {
                                 {/* Stats - Book Count as Badge */}
                                 <div className="flex justify-center">
                                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-foreground text-background">
-                                        <span className="text-2xl font-bold">
+                                        <span className="text-sm font-bold">
                                             {books.length}
                                         </span>
-                                        <span className="text-xs font-medium uppercase tracking-wide">
+                                        <span className="text-sm font-medium tracking-wide">
                                             Rekomendasi Buku
                                         </span>
                                     </div>
@@ -262,9 +289,7 @@ export default async function PeopleDetail({ params }) {
                                 {/* Left side - Text content */}
                                 <div className="flex-1">
                                     {/* Subtitle */}
-                                    <p className="text-sm font-medium text-muted-foreground tracking-[0.2em] mb-4 uppercase">
-                                        Rekomendasi Buku
-                                    </p>
+
 
                                     {/* Name - Extra large and dramatic */}
                                     <h1 className="font-display text-7xl lg:text-8xl xl:text-9xl font-bold text-foreground leading-[0.9] tracking-tighter italic mb-8">
@@ -283,7 +308,7 @@ export default async function PeopleDetail({ params }) {
                                     {/* Stats Badge */}
                                     <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-foreground text-background text-sm font-semibold tracking-wide">
                                         <span className="w-2 h-2 rounded-full bg-background/60 animate-pulse"></span>
-                                        {books.length} BUKU DIREKOMENDASIKAN
+                                        {books.length} REKOMENDASI BUKU
                                     </div>
                                 </div>
 
@@ -317,95 +342,19 @@ export default async function PeopleDetail({ params }) {
                 <main className="container mx-auto px-4 py-12">
 
                     {/* Books Recommended */}
-                    <div className="mb-6">
-                        <h2 className="text-2xl font-bold mb-2">Buku yang Direkomendasikan</h2>
-                        <p className="text-muted-foreground">
+                    <div className="mb-12">
+                        <h2 className="text-2xl md:text-4xl font-bold mb-3 text-foreground text-center uppercase">Buku Rekomendasi {person.name}</h2>
+                        <p className="text-muted-foreground text-base text-center">
                             {books.length > 0
-                                ? `${books.length} buku yang direkomendasikan oleh ${person.name}`
+                                ? `${books.length} rekomendasi buku ditemukan.`
                                 : `${person.name} belum merekomendasikan buku apapun`}
                         </p>
                     </div>
 
                     {books.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             {books.map((book) => (
-                                <div
-                                    key={book.id}
-                                    className="bg-white border border-gray-200 p-6 hover:border-gray-400 transition-colors"
-                                >
-                                    <div className="flex gap-4 mb-4">
-                                        {/* Book Cover */}
-                                        <Link href={`/book/${book.id}`} className="flex-shrink-0">
-                                            <div className="w-24 h-36 bg-muted rounded-md overflow-hidden hover:opacity-80 transition-opacity">
-                                                {book.cover_image_url ? (
-                                                    <img
-                                                        src={book.cover_image_url}
-                                                        alt={book.title}
-                                                        className="w-full h-full object-cover"
-                                                        loading="lazy"
-                                                    />
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center">
-                                                        <Book className="h-8 w-8 text-muted-foreground" />
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </Link>
-
-                                        {/* Book Info */}
-                                        <div className="flex-1 min-w-0">
-                                            <Link href={`/book/${book.id}`}>
-                                                <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors line-clamp-2">
-                                                    {book.title}
-                                                </h3>
-                                            </Link>
-                                            <p className="text-sm text-muted-foreground mb-2">{book.author}</p>
-
-                                            <div className="mb-3">
-                                                {book.quote ? (
-                                                    <>
-                                                        <div className="flex gap-2 mb-2 bg-muted/80 rounded-r-md">
-                                                            <p className="text-sm border-l-2 border-gray-500 pl-2 py-3 pr-2 italic text-gray-500 leading-relaxed">
-                                                                &quot;{book.quote}&quot;
-                                                            </p>
-                                                        </div>
-
-                                                        {book.source && (
-                                                            <div className="pt-3 flex justify-start">
-                                                                <a
-                                                                    href={book.source}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 hover:underline"
-                                                                >
-                                                                    <ExternalLink className="h-3 w-3" />
-                                                                    Lihat Sumber
-                                                                </a>
-                                                            </div>
-                                                        )}
-                                                    </>
-                                                ) : (
-                                                    <div className="flex gap-2 mb-2 bg-muted/80 rounded-r-md">
-                                                        <p className="text-sm border-l-2 border-gray-500 pl-2 py-3 pr-2 italic text-gray-500 leading-relaxed">
-                                                            &quot;&quot;
-                                                        </p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className='border-t'>
-                                        {book.tokopedia_url && (
-                                            <Button className="w-full mt-5" asChild>
-                                                <a href={book.tokopedia_url} target="_blank" rel="noopener noreferrer">
-                                                    <ExternalLink className="mr-2 h-4 w-4" />
-                                                    Beli di Tokopedia
-                                                </a>
-                                            </Button>
-                                        )}
-                                    </div>
-                                </div>
+                                <BookCard key={book.id} book={book} currentPersonId={person.id} currentPersonName={person.name} />
                             ))}
                         </div>
                     ) : (
@@ -422,7 +371,7 @@ export default async function PeopleDetail({ params }) {
                 {/* Footer */}
                 <footer className="border-t mt-20">
                     <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
-                        <p>© 2024 Rekobu - Rekomendasi Buku Terpercaya</p>
+                        <p>© {new Date().getFullYear()} Rekobu - Rekomendasi Buku Terpercaya</p>
                     </div>
                 </footer>
             </div>

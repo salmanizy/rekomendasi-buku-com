@@ -168,7 +168,7 @@ export default function BookDetail() {
       </main>
       <footer className="border-t mt-20">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
-          <p>© 2025 Rekobu - Rekomendasi Buku Terpercaya</p>
+          <p>© {new Date().getFullYear()} Rekobu - Rekomendasi Buku Terpercaya</p>
         </div>
       </footer>
     </div>

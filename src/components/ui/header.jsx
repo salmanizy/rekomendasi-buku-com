@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { Droplet } from 'lucide-react';
 
 export default function Header() {
   const pathname = usePathname();
@@ -32,8 +33,9 @@ export default function Header() {
         {/* Bar Atas */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-2">
-              <h1 className="font-display text-2xl font-black">REKOBU</h1>
+            <Link href="/" className="flex items-center gap-1.5">
+              <Droplet className="h-6 w-6 mb-0.5" style={{ color: '#E97451' }} fill="#E97451" />
+              <h1 className="font-display text-2xl font-bold italic leading-none" style={{ color: '#E97451' }}>Rekobu</h1>
             </Link>
           </div>
 
@@ -64,10 +66,10 @@ export default function Header() {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-foreground"
+              className="h-6 w-6"
               fill="none"
               viewBox="0 0 24 24"
-              stroke="currentColor"
+              stroke="#E97451"
             >
               {menuOpen ? (
                 <path
