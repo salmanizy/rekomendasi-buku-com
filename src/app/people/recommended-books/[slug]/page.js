@@ -1,9 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowLeft, Book, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Book, ExternalLink, Twitter, Instagram, Linkedin, Globe } from 'lucide-react';
 import Header from '@/components/ui/header';
 import { supabase } from '@/lib/supabase';
 
@@ -141,35 +139,182 @@ export default async function PeopleDetail({ params }) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
 
-            <div className="min-h-screen" style={{ backgroundColor: '#f0ede3' }}>
+            <div className="min-h-screen bg-background">
                 <Header />
 
-                <main className="container mx-auto px-4 py-8">
-                    <Link href="/" className="inline-flex mb-5 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-                        <ArrowLeft className="h-4 w-4" />
-                        Kembali
-                    </Link>
+                {/* Hero Section - Epic People Overview */}
+                <div className="relative bg-gradient-to-br from-background via-background to-muted/20 border-b">
+                    {/* Mobile Layout - Full Screen Card */}
+                    <div className="md:hidden">
+                        {/* Back Button - Positioned absolutely */}
+                        <div className="absolute top-4 left-4 z-20">
+                            <Link href="/" className="inline-flex items-center gap-2 text-sm text-foreground bg-background/80 backdrop-blur-sm px-3 py-2 rounded-full hover:bg-background transition-colors shadow-lg">
+                                <ArrowLeft className="h-4 w-4" />
+                                Kembali
+                            </Link>
+                        </div>
 
-                    <div className="mb-12">
-                        <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
-                            <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 border-white shadow-sm">
-                                <AvatarImage src={person.avatar_url} alt={person.name} />
-                                <AvatarFallback className="text-4xl">
-                                    {person.name?.charAt(0)?.toUpperCase() || 'U'}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1">
-                                <h1 className="font-display text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-                                    Buku Rekomendasi {person.name}
+                        <div className="bg-card overflow-hidden">
+                            {/* Avatar - Full Width and Height */}
+                            <div className="relative w-full h-[500px] bg-muted">
+                                {person.avatar_url ? (
+                                    <img
+                                        src={person.avatar_url}
+                                        alt={person.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                        <div className="text-9xl font-bold text-muted-foreground">
+                                            {person.name?.charAt(0)?.toUpperCase() || 'U'}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Card Content */}
+                            <div className="p-6 text-center">
+                                {/* Name - Italic */}
+                                <h1 className="font-display text-2xl font-bold text-foreground mb-2 italic">
+                                    {person.name}
                                 </h1>
-                                <p className="text-lg text-gray-700 leading-relaxed max-w-2xl">
-                                    {person.bio || 'Tidak ada bio tersedia.'}
-                                </p>
+
+                                {/* Bio */}
+                                {person.bio && (
+                                    <p className="text-sm text-muted-foreground leading-relaxed mb-6 px-2">
+                                        {person.bio}
+                                    </p>
+                                )}
+
+                                {/* Social Links */}
+                                {(person.twitter_url || person.instagram_url || person.linkedin_url || person.website_url) && (
+                                    <div className="flex justify-center gap-3 mb-6">
+                                        {person.twitter_url && (
+                                            <a
+                                                href={person.twitter_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-10 h-10 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
+                                                aria-label="Twitter"
+                                            >
+                                                <Twitter className="h-4 w-4 text-foreground" />
+                                            </a>
+                                        )}
+                                        {person.instagram_url && (
+                                            <a
+                                                href={person.instagram_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-10 h-10 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
+                                                aria-label="Instagram"
+                                            >
+                                                <Instagram className="h-4 w-4 text-foreground" />
+                                            </a>
+                                        )}
+                                        {person.linkedin_url && (
+                                            <a
+                                                href={person.linkedin_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-10 h-10 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
+                                                aria-label="LinkedIn"
+                                            >
+                                                <Linkedin className="h-4 w-4 text-foreground" />
+                                            </a>
+                                        )}
+                                        {person.website_url && (
+                                            <a
+                                                href={person.website_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-10 h-10 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
+                                                aria-label="Website"
+                                            >
+                                                <Globe className="h-4 w-4 text-foreground" />
+                                            </a>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Stats - Book Count as Badge */}
+                                <div className="flex justify-center">
+                                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-foreground text-background">
+                                        <span className="text-2xl font-bold">
+                                            {books.length}
+                                        </span>
+                                        <span className="text-xs font-medium uppercase tracking-wide">
+                                            Rekomendasi Buku
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="border-t border-gray-300 mb-10"></div>
+                    {/* Desktop Layout */}
+                    <div className="hidden md:block">
+                        <div className="container mx-auto px-4 py-16 md:py-24">
+                            <Link href="/" className="inline-flex mb-8 md:mb-12 items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                                <ArrowLeft className="h-4 w-4" />
+                                Kembali
+                            </Link>
+                            <div className="flex gap-16 lg:gap-24 items-center max-w-7xl mx-auto">
+                                {/* Left side - Text content */}
+                                <div className="flex-1">
+                                    {/* Subtitle */}
+                                    <p className="text-sm font-medium text-muted-foreground tracking-[0.2em] mb-4 uppercase">
+                                        Rekomendasi Buku
+                                    </p>
+
+                                    {/* Name - Extra large and dramatic */}
+                                    <h1 className="font-display text-7xl lg:text-8xl xl:text-9xl font-bold text-foreground leading-[0.9] tracking-tighter italic mb-8">
+                                        {person.name?.split(' ').map((word, i) => (
+                                            <span key={i} className="block">{word}</span>
+                                        ))}
+                                    </h1>
+
+                                    {/* Bio */}
+                                    {person.bio && (
+                                        <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mb-8">
+                                            {person.bio}
+                                        </p>
+                                    )}
+
+                                    {/* Stats Badge */}
+                                    <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-foreground text-background text-sm font-semibold tracking-wide">
+                                        <span className="w-2 h-2 rounded-full bg-background/60 animate-pulse"></span>
+                                        {books.length} BUKU DIREKOMENDASIKAN
+                                    </div>
+                                </div>
+
+                                {/* Right side - Avatar with dramatic styling */}
+                                <div className="flex-shrink-0">
+                                    <div className="relative">
+                                        {/* Decorative background element */}
+                                        <div className="absolute -inset-4 bg-gradient-to-br from-muted/40 to-muted/10 rounded-full blur-2xl"></div>
+
+                                        {/* Avatar */}
+                                        <div className="relative w-56 h-56 lg:w-64 lg:h-64 xl:w-72 xl:h-72 rounded-full overflow-hidden border-4 border-background shadow-2xl ring-8 ring-muted/30">
+                                            {person.avatar_url ? (
+                                                <img
+                                                    src={person.avatar_url}
+                                                    alt={person.name}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-muted flex items-center justify-center text-6xl font-bold text-muted-foreground">
+                                                    {person.name?.charAt(0)?.toUpperCase() || 'U'}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <main className="container mx-auto px-4 py-12">
 
                     {/* Books Recommended */}
                     <div className="mb-6">
